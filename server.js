@@ -1,12 +1,36 @@
 const express = require('express');
 const MongoClient = require('mongodb');
 const bodyParser = require('body-parser');
-const app = express();
 var db = require('./config/db');
+var app = express();
 
 
 const port = 8000;
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+
+var server = require('http').createServer(app).listen(port);
+var io = require('socket.io').listen(server);
+
+
+io.sockets.on('connection', function(client){
+
+    console.log("client connected: " + client.id);
+
+    client.on("sendTo", function(chatMessage){
+        console.log("Message From: " + chatMessage.fromName);
+        console.log("Message To: " + chatMessage.toName);
+
+
+        io.sockets.socket(chatMessage.toClientID).emit("chatMessage", {"fromName" : chatMessage.fromName,
+            "toName" : chatMessage.toName,
+            "toClientID" : chatMessage.toClientID,
+            "msg" : chatMessage.msg});
+
+    });
+});
 
 MongoClient.connect(db.url, (err, database) => {
     if (err) return console.log(err)
@@ -16,10 +40,10 @@ MongoClient.connect(db.url, (err, database) => {
     require('./app/routes')(app, db);
 
 
+    /*
+        app.listen(port, () => {
 
-    app.listen(port, () => {
-
-        console.log('We are live on ' + port);
-    });
+            console.log('We are live on ' + port);
+        });*/
 
 })
