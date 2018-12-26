@@ -6,15 +6,16 @@ var app = express();
 
 
 const port = 8000;
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 
 
 
-var server = require('http').createServer(app).listen(port);
-var io = require('socket.io').listen(server);
+//var server = require('http').createServer(app).listen(port);
+//var io = require('socket.io').listen(server);
 
-
+/*
 io.sockets.on('connection', function(client){
 
     console.log("client connected: " + client.id);
@@ -31,7 +32,7 @@ io.sockets.on('connection', function(client){
 
     });
 });
-
+*/
 MongoClient.connect(db.url, (err, database) => {
     if (err) return console.log(err)
 
@@ -40,10 +41,10 @@ MongoClient.connect(db.url, (err, database) => {
     require('./app/routes')(app, db);
 
 
-    /*
+
         app.listen(port, () => {
 
             console.log('We are live on ' + port);
-        });*/
+        });
 
 })
