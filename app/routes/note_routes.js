@@ -15,12 +15,13 @@ module.exports = function (app, db) {
         */
 
     //CREATE
-    //Postman: POST:localhost:8000/notes
+    //Postman: POST:localhost:8000/register
     //Insert data into the DB.
-    app.post('/notes', (req, res) => {
-        const note = { text: req.body.body, title: req.body.title };
-
-        db.collection('MyCollection').insert(note, (err, result) => {
+    app.post('/register', (req, res) => {
+        const note = { id: req.body.id, phoneNumber: req.body.phoneNumber,firstName: req.body.firstName,lastName: req.body.lastName,email: req.body.email,address: req.body.address,image: req.body.image};
+        //const note = { text: req.body.body, title: req.body.title };
+        console.log("Register in bound " + req.toString());
+        db.collection('Clients').insert(note, (err, result) => {
             if (err) {
                 res.send({ 'error': 'An error has occurred in Post.' });
             } else {
