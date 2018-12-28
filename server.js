@@ -42,7 +42,7 @@ MongoClient.connect(db.url, (err, database) => {
 
 
 
-        app.listen(port, () => {
+        app.listen(process.env.PORT || 3000, () => {
 
             console.log('We are live on ' + port);
         });
