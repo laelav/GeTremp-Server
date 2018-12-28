@@ -44,7 +44,7 @@ MongoClient.connect(db.url, (err, database) => {
 
         app.listen(process.env.PORT || port, () => {
 
-            console.log('We are live on ' + port);
+            console.log("Express server listening on port %d in %s mode - We Are lIVE!", this.address().port, app.settings.env);
         });
 
 })
