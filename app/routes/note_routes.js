@@ -83,6 +83,22 @@ module.exports = function (app, db) {
         });
     });
 
+    app.get('/getalltempdrives/:group', (req, res) => {
+        const group = req.params.group;
+
+        console.log("Get All Temp Drives in progress " + group);
+
+        db.collection(group + '-Temp').find({}).toArray(function(err, result) {
+            if (err) {
+                res.send({ 'error': 'An error has occurred in Get /getalltempdrives.' });
+            } else {
+                //Send back to front.
+                console.log(result);
+                res.send(result);
+            }
+        });
+    });
+
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
 /* HTTP Methods examples:
 
