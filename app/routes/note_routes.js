@@ -5,7 +5,7 @@ module.exports = function (app, db) {
     //Postman: POST:localhost:8000/register
     //Insert data into the DB.
     app.post('/register', (req, res) => {
-        const note = { id: req.body.id, phoneNumber: req.body.phoneNumber,firstName: req.body.firstName,lastName: req.body.lastName,email: req.body.email,address: req.body.address,image: req.body.image};
+        const note = { id: req.body.id, phoneNumber: req.body.phoneNumber,firstName: req.body.firstName,lastName: req.body.lastName,email: req.body.email,address: req.body.address,image: req.body.image, groups: req.body.groups};
         //const note = { text: req.body.body, title: req.body.title };
         //console.log(req.body.id);
         console.log("Register in progress " +req.body.id);
@@ -39,6 +39,33 @@ module.exports = function (app, db) {
         const note = {userid: req.body.userid, name: req.body.name, begincity: req.body.begincity, endcity: req.body.endcity, day: req.body.day, time: req.body.time, openslots: req.body.openslots, totalslots: req.body.totalslots};
         console.log("Add Routine Drive in progress " + req.body.group + ": " +req.body.name + ", " +  req.body.begincity + " -> " + req.body.endcity);
 
+/*
+        let myresult = {};
+
+        const check = {_id: new ObjectID(req.body.id)}
+        console.log(check);
+        db.collection('Clients').find({check}).toArray( function(err, result) {
+            if (err) throw err;
+            myresult = result;
+            console.log(result);
+        });
+
+        let thegroups = myresult.body.groups;
+
+        for(var i = 0; i < thegroups.length; i++)
+        {
+            if(thegroups[i] == req.body.group)
+            {
+               console.log("Has it!")
+                res.send("Has it!")
+            }
+            else{
+                console.log("Doesn't have it!");
+                res.send(("Doesn't have it!"))
+            }
+        }
+        */
+
         db.collection(req.body.group + "-Routine").insert(note, (err, result) => {
             if (err) {
                 res.send({ 'error': 'An error has occurred in Post /addroutinedrive.' });
@@ -48,6 +75,8 @@ module.exports = function (app, db) {
                 res.send(result.ops[0]);
             }
         });
+
+
     });
 
 
