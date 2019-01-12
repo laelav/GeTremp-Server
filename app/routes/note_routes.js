@@ -104,6 +104,19 @@ module.exports = function (app, db) {
     });
 
 
+    app.get('/getuserbyid/:id', (req, res) => {
+        const id = req.params.id;
+        console.log("Get User by ID in progress " + id);
+        const check = {'_id': new ObjectID(id)};
+
+        db.collection('Clients').findOne(check, function (err, result) {
+            if (err) throw err;
+            else
+                res.send(result);
+        });
+    });
+
+
     app.get('/getallroutinedrives/:id/:group', (req, res) => {
         const id = req.params.id;
         const group = req.params.group;
