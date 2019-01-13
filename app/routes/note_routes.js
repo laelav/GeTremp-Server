@@ -107,7 +107,7 @@ module.exports = function (app, db) {
     app.get('/getuserbyid/:id', (req, res) => {
         const id = req.params.id;
         console.log("Get User by ID in progress " + id);
-        const check = {'id': new ObjectID(id)};
+        const check = {'id': id};
 
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
