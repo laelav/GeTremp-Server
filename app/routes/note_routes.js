@@ -58,7 +58,7 @@ module.exports = function (app, db) {
         console.log("Add Routine Drive in progress " + req.body.group + ": " + req.body.name + ", " + req.body.begincity + " -> " + req.body.endcity + " by userid " + req.body.userid);
 
 
-        const check = {'id': new ObjectID(req.body.userid)};
+        const check = {'id': req.body.userid};
         //console.log(check);
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
@@ -123,7 +123,7 @@ module.exports = function (app, db) {
 
         console.log("Get All Routine Drives in progress " + group + " by userid " + id);
 
-        const check = {'id': new ObjectID(id)};
+        const check = {'id': id};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
             //console.log(result);
@@ -161,7 +161,7 @@ module.exports = function (app, db) {
 
         console.log("Get All Temp Drives in progress " + group + " by userid " + id);
 
-        const check = {'id': new ObjectID(id)};
+        const check = {'id': id};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
             //console.log(result);
