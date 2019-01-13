@@ -29,16 +29,17 @@ module.exports = function (app, db) {
     });
 
     app.post('/addgroup', (req, res) => {
-        const note = {name: req.body.name, image: req.body.image};
-        console.log("Register in progress " + req.body.name);
-        db.createCollection(req.body.name + "-Routine");
-        db.createCollection(req.body.name + "-Temp");
+        var groupname = req.body.name.toLowerCase();
+        const note = {name: groupname, image: req.body.image};
+        console.log("Register in progress " + groupname);
+        db.createCollection(groupname + "-Routine");
+        db.createCollection(groupname + "-Temp");
         db.collection('AppGroups').insert(note, (err, result) => {
             if (err) {
                 res.send({'error': 'An error has occurred in Post /addgroup.'});
             } else {
                 //Send back to front.
-                console.log(result.ops[0]._id);
+                console.log(result.ops[0].id);
                 res.send(result.ops[0]);
             }
         });
@@ -58,7 +59,7 @@ module.exports = function (app, db) {
         console.log("Add Routine Drive in progress " + req.body.group + ": " + req.body.name + ", " + req.body.begincity + " -> " + req.body.endcity + " by userid " + req.body.userid);
 
 
-        const check = {'_id': new ObjectID(req.body.userid)};
+        const check = {'id': req.body.userid};
         //console.log(check);
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
@@ -77,8 +78,8 @@ module.exports = function (app, db) {
                         res.send({'error': 'An error has occurred in Post /addroutinedrive.'});
                     } else {
                         //Send back to front.
-                        console.log(result.ops[0]._id + " The drive has been added successfully!");
-                        res.send(result.ops[0]._id + " The drive has been added successfully!");
+                        console.log(result.ops[0].id + " The drive has been added successfully!");
+                        res.send(result.ops[0].id + " The drive has been added successfully!");
                     }
                 });
             } else {
@@ -107,7 +108,7 @@ module.exports = function (app, db) {
     app.get('/getuserbyid/:id', (req, res) => {
         const id = req.params.id;
         console.log("Get User by ID in progress " + id);
-        const check = {'_id': new ObjectID(id)};
+        const check = {'id': id};
 
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
@@ -119,11 +120,11 @@ module.exports = function (app, db) {
 
     app.get('/getallroutinedrives/:id/:group', (req, res) => {
         const id = req.params.id;
-        const group = req.params.group;
+        const group = req.params.group.toLowerCase();
 
         console.log("Get All Routine Drives in progress " + group + " by userid " + id);
 
-        const check = {'_id': new ObjectID(id)};
+        const check = {'id': id};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
             //console.log(result);
@@ -157,11 +158,11 @@ module.exports = function (app, db) {
 
     app.get('/getalltempdrives/:id/:group', (req, res) => {
         const id = req.params.id;
-        const group = req.params.group;
+        const group = req.params.group.toLowerCase();
 
         console.log("Get All Temp Drives in progress " + group + " by userid " + id);
 
-        const check = {'_id': new ObjectID(id)};
+        const check = {'id': id};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
             //console.log(result);
@@ -187,6 +188,37 @@ module.exports = function (app, db) {
             } else {
                 console.log("The user id:" + id + " is not a part of the group '" + group + "'!");
                 res.send("The user id:" + id + " is not a part of the group '" +group + "'!");
+            }
+        });
+    });
+
+
+    app.get('/getallroutinedrivesbyadmin/:group', (req, res) => {
+        const group = req.params.group.toLowerCase();
+
+        console.log("Get All Routine Drives By Admin in progress " + group);
+        db.collection(group + '-Routine').find({}).toArray(function (err, result) {
+            if (err) {
+                res.send({'error': 'An error has occurred in Get /getallroutinedrivesbyadmin.'});
+            } else {
+                //Send back to front.
+                console.log("All routine drives in group " + group + " requested by admin sent successfully to front!");
+                res.send(result);
+            }
+        });
+    });
+
+    app.get('/getalltempdrivesbyadmin/:group', (req, res) => {
+        const group = req.params.group.toLowerCase();
+
+        console.log("Get All Temp Drives By Admin in progress " + group);
+        db.collection(group + '-Temp').find({}).toArray(function (err, result) {
+            if (err) {
+                res.send({'error': 'An error has occurred in Get /getalltempdrivesbyadmin.'});
+            } else {
+                //Send back to front.
+                console.log("All temp drives in group " + group + " requested by admin sent successfully to front!");
+                res.send(result);
             }
         });
     });
