@@ -58,7 +58,7 @@ module.exports = function (app, db) {
         console.log("Add Routine Drive in progress " + req.body.group + ": " + req.body.name + ", " + req.body.begincity + " -> " + req.body.endcity + " by userid " + req.body.userid);
 
 
-        const check = {'_id': new ObjectID(req.body.userid)};
+        const check = {'id': new ObjectID(req.body.userid)};
         //console.log(check);
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
@@ -77,8 +77,8 @@ module.exports = function (app, db) {
                         res.send({'error': 'An error has occurred in Post /addroutinedrive.'});
                     } else {
                         //Send back to front.
-                        console.log(result.ops[0]._id + " The drive has been added successfully!");
-                        res.send(result.ops[0]._id + " The drive has been added successfully!");
+                        console.log(result.ops[0].id + " The drive has been added successfully!");
+                        res.send(result.ops[0].id + " The drive has been added successfully!");
                     }
                 });
             } else {
@@ -107,7 +107,7 @@ module.exports = function (app, db) {
     app.get('/getuserbyid/:id', (req, res) => {
         const id = req.params.id;
         console.log("Get User by ID in progress " + id);
-        const check = {'_id': new ObjectID(id)};
+        const check = {'id': new ObjectID(id)};
 
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
@@ -123,7 +123,7 @@ module.exports = function (app, db) {
 
         console.log("Get All Routine Drives in progress " + group + " by userid " + id);
 
-        const check = {'_id': new ObjectID(id)};
+        const check = {'id': new ObjectID(id)};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
             //console.log(result);
@@ -161,7 +161,7 @@ module.exports = function (app, db) {
 
         console.log("Get All Temp Drives in progress " + group + " by userid " + id);
 
-        const check = {'_id': new ObjectID(id)};
+        const check = {'id': new ObjectID(id)};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
             //console.log(result);
