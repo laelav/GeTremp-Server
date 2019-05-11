@@ -453,8 +453,7 @@ module.exports = function (app, db) {
                             });
 
                         }
-                    }
-                    else{
+                    } else {
                         res.send("The user id " + userid + " is already in the drive " + driveid);
                         console.log("The user id " + userid + " is already in the drive " + driveid);
                     }
@@ -546,8 +545,7 @@ module.exports = function (app, db) {
                             });
 
                         }
-                    }
-                    else{
+                    } else {
                         res.send("The user id " + userid + " is already in the drive " + driveid);
                         console.log("The user id " + userid + " is already in the drive " + driveid);
                     }
@@ -621,12 +619,12 @@ module.exports = function (app, db) {
                         console.log("The user " + userid + " is not in drive id: " + driveid);
                     } else {
                         var updateddrive = driveresult;
-                        updateddrive.openslots = (parseInt(updateddrive.openslots)+1).toString();
+                        updateddrive.openslots = (parseInt(updateddrive.openslots) + 1).toString();
                         var updateddrivemembers = updateddrive.drivemembers;
                         if (updateddrivemembers === undefined)
                             updateddrivemembers = [];
 
-                        updateddrivemembers = updateddrivemembers.filter(function( obj ) {
+                        updateddrivemembers = updateddrivemembers.filter(function (obj) {
                             return obj.id !== userid;
                         });
 
@@ -713,12 +711,12 @@ module.exports = function (app, db) {
                         console.log("The user " + userid + " is not in drive id: " + driveid);
                     } else {
                         var updateddrive = driveresult;
-                        updateddrive.openslots = (parseInt(updateddrive.openslots)+1).toString();
+                        updateddrive.openslots = (parseInt(updateddrive.openslots) + 1).toString();
                         var updateddrivemembers = updateddrive.drivemembers;
                         if (updateddrivemembers === undefined)
                             updateddrivemembers = [];
 
-                        updateddrivemembers = updateddrivemembers.filter(function( obj ) {
+                        updateddrivemembers = updateddrivemembers.filter(function (obj) {
                             return obj.id !== userid;
                         });
 
@@ -749,8 +747,6 @@ module.exports = function (app, db) {
 
 
     });
-
-
 
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
