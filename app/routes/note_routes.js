@@ -91,7 +91,7 @@ module.exports = function (app, db) {
                             } else {
                                 //Send back to front.
                                 console.log(result.ops[0]._id + " The drive has been added successfully!");
-                                res.send(result.ops[0]._id  + " The drive has been added successfully!");
+                                res.send(result.ops[0]._id + " The drive has been added successfully!");
                             }
                         });
                     } else {
@@ -115,7 +115,7 @@ module.exports = function (app, db) {
             time: req.body.time,
             openslots: req.body.openslots,
             totalslots: req.body.totalslots,
-            drivemembers:[]
+            drivemembers: []
         };
         console.log("Add Temp Drive in progress " + req.body.group + ": " + req.body.name + ", " + req.body.begincity + " -> " + req.body.endcity + " by userid " + req.body.userid);
 
@@ -140,7 +140,7 @@ module.exports = function (app, db) {
                     //Send back to front.
                     //console.log(result);
                     for (var i = 0; i < result.length; i++) {
-                        if (result[i].name == req.body.group.toLowerCase()){
+                        if (result[i].name == req.body.group.toLowerCase()) {
                             console.log(result[i].name + " + " + req.body.group.toLowerCase())
                             GroupExistFlag = 1;
                         }
@@ -228,7 +228,7 @@ module.exports = function (app, db) {
 
             } else {
                 console.log("The user id:" + id + " is not a part of the group '" + group + "'!");
-                res.send("The user id:" + id + " is not a part of the group '" +group + "'!");
+                res.send("The user id:" + id + " is not a part of the group '" + group + "'!");
             }
         });
 
@@ -266,7 +266,7 @@ module.exports = function (app, db) {
 
             } else {
                 console.log("The user id:" + id + " is not a part of the group '" + group + "'!");
-                res.send("The user id:" + id + " is not a part of the group '" +group + "'!");
+                res.send("The user id:" + id + " is not a part of the group '" + group + "'!");
             }
         });
     });
@@ -309,7 +309,7 @@ module.exports = function (app, db) {
         const userid = req.params.userid;
         const driveid = req.params.driveid;
         //making a Json with "ObjectID".
-        const details = { '_id': new ObjectID(driveid) };
+        const details = {'_id': new ObjectID(driveid)};
 
 
         db.collection(group + '-Routine').find({}).toArray(function (err, result) {
@@ -319,21 +319,20 @@ module.exports = function (app, db) {
                 //Send back to front.
                 var ifDriveExistFlag = 0;
                 //console.log(result);
-                for (var i=0;i<result.length;i++){
-                    if (driveid == result[i]._id){
+                for (var i = 0; i < result.length; i++) {
+                    if (driveid == result[i]._id) {
                         ifDriveExistFlag = 1;
-                        if (userid == result[i].userid){
+                        if (userid == result[i].userid) {
                             db.collection(group + '-Routine').remove(details, (err, item) => {
                                 if (err) {
-                                    res.send({ 'error': 'An error has occurred in deleteroutinedrive' });
+                                    res.send({'error': 'An error has occurred in deleteroutinedrive'});
                                 } else {
                                     //Send back to front.
                                     console.log('Drive ' + driveid + ' deleted!');
                                     res.send('Drive ' + driveid + ' deleted!');
                                 }
                             });
-                        }
-                        else{
+                        } else {
                             res.send("The drive " + driveid + " hasn't been opened by the user " + userid);
                         }
                     }
@@ -348,7 +347,7 @@ module.exports = function (app, db) {
         const userid = req.params.userid;
         const driveid = req.params.driveid;
         //making a Json with "ObjectID".
-        const details = { '_id': new ObjectID(driveid) };
+        const details = {'_id': new ObjectID(driveid)};
 
 
         db.collection(group + '-Temp').find({}).toArray(function (err, result) {
@@ -358,21 +357,20 @@ module.exports = function (app, db) {
                 //Send back to front.
                 var ifDriveExistFlag = 0;
                 //console.log(result);
-                for (var i=0;i<result.length;i++){
-                    if (driveid == result[i]._id){
+                for (var i = 0; i < result.length; i++) {
+                    if (driveid == result[i]._id) {
                         ifDriveExistFlag = 1;
-                        if (userid == result[i].userid){
+                        if (userid == result[i].userid) {
                             db.collection(group + '-Temp').remove(details, (err, item) => {
                                 if (err) {
-                                    res.send({ 'error': 'An error has occurred in deletetempdrive' });
+                                    res.send({'error': 'An error has occurred in deletetempdrive'});
                                 } else {
                                     //Send back to front.
                                     console.log('Drive ' + driveid + ' deleted!');
                                     res.send('Drive ' + driveid + ' deleted!');
                                 }
                             });
-                        }
-                        else{
+                        } else {
                             res.send("The drive " + driveid + " hasn't been opened by the user " + userid);
                         }
                     }
@@ -381,136 +379,263 @@ module.exports = function (app, db) {
         });
     });
 
-
-
-    app.put('/jointempdrive/:group/:userid/:driveid', (req, res) => {
-        const group = req.params.group.toLowerCase();
-        const userid = req.params.userid;
-        const driveid = req.params.driveid;
-        //console.log(userid)
-        const check = { 'id': userid };
-
-        db.collection('Clients').findOne(check, function (err, userresult) {
-            if (err) throw err;
-           // console.log("This is the drivers details: " + JSON.stringify(userresult));
-            //console.log(JSON.stringify(userresult.groups));
-
-            var tempgroups = userresult.groups;
-            if(tempgroups == "" || tempgroups === null || tempgroups === undefined)
-                tempgroups = [];
-
-            var output = tempgroups.filter(function(item) {
-                return item == group;
-            });
-            //console.log("*******" + output.includes(group));
-            if (output.includes(group)){
-                const driverdetails = {'id' : userid,
-                    'firstname' : userresult.firstName,
-                    'lastname' : userresult.lastName};
-                //console.log("This is the drivers details: " + JSON.stringify(userresult));
-                //console.log("This is the drivers details: " + JSON.stringify(driverdetails));
-
-                const details = { '_id': new ObjectID(driveid) };
-                //console.log("This is the drive details: " + JSON.stringify(details));
-
-                db.collection(group + '-Temp').findOne(details, function (err, driveresult) {
-                    if (err) throw err;
-                    //console.log(group + '-Temp' + " " + JSON.stringify(driveresult));
-                    //console.log("The open slots is: " + result.openslots);
-                    if (driveresult.openslots < 1){
-                        res.send("There are no open slots in drive id: " + driveid);
-                        console.log("The open slots is: " + driveresult.openslots);
-                        console.log("There are no open slots in drive id: " + driveid);
-                    }
-                    else{
-                        var updateddrive = driveresult;
-                        updateddrive.openslots = parseInt(updateddrive.openslots -1 ).toString();
-                        var updateddrivemembers = updateddrive.drivemembers;
-                        if (updateddrivemembers === undefined)
-                            updateddrivemembers = [];
-                        updateddrivemembers.push(driverdetails);
-                        updateddrive.drivemembers = updateddrivemembers;
-
-
-                        db.collection(group + '-Temp').update(details, updateddrive, (err, result) => {
-                            if (err) {
-                                res.send({ 'error': 'An error has occurred' });
-                            } else {
-                                //Send back to front.
-                                res.send(updateddrive);
-                                console.log(updateddrive);
-                            }
-                        });
-
-                    }
-
-
-                });
-            }
-            else
-            {
-                res.send("The user id " + userid + " isn't part of the group " + group);
-                console.log("The user id " + userid + " isn't part of the group " + group);
-            }
-
-
-
-        })
-
-
-    });
-
     app.put('/joinroutinedrive/:group/:userid/:driveid', (req, res) => {
         const group = req.params.group.toLowerCase();
         const userid = req.params.userid;
         const driveid = req.params.driveid;
         //console.log(userid)
-        const check = { 'id': userid };
+        const check = {'id': userid};
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
             // console.log("This is the drivers details: " + JSON.stringify(userresult));
             //console.log(JSON.stringify(userresult.groups));
             var tempgroups = userresult.groups;
-            if(tempgroups == "" || tempgroups === null || tempgroups === undefined)
+            if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
                 tempgroups = [];
 
-            var output = tempgroups.filter(function(item) {
+            var output = tempgroups.filter(function (item) {
                 return item == group;
             });
             //console.log("*******" + output.includes(group));
-            if (output.includes(group)){
-                const driverdetails = {'id' : userid,
-                    'firstname' : userresult.firstName,
-                    'lastname' : userresult.lastName};
+            if (output.includes(group)) {
+                const driverdetails = {
+                    'id': userid,
+                    'firstname': userresult.firstName,
+                    'lastname': userresult.lastName
+                };
                 //console.log("This is the drivers details: " + JSON.stringify(userresult));
                 //console.log("This is the drivers details: " + JSON.stringify(driverdetails));
 
-                const details = { '_id': new ObjectID(driveid) };
+                const details = {'_id': new ObjectID(driveid)};
                 //console.log("This is the drive details: " + JSON.stringify(details));
 
                 db.collection(group + '-Routine').findOne(details, function (err, driveresult) {
                     if (err) throw err;
-                    //console.log(group + '-Routine' + " " + JSON.stringify(driveresult));
-                    //console.log("The open slots is: " + result.openslots);
-                    if (driveresult.openslots < 1){
-                        res.send("There are no open slots in drive id: " + driveid);
-                        console.log("The open slots is: " + driveresult.openslots);
-                        console.log("There are no open slots in drive id: " + driveid);
+
+                    var tempdrivemembers = driveresult.drivemembers;
+
+
+                    if (tempdrivemembers == "" || tempdrivemembers === null || tempdrivemembers === undefined)
+                        tempdrivemembers = [];
+
+
+                    var membersoutput = tempdrivemembers.filter(function (item) {
+                        return item.id == userid;
+                    });
+
+
+                    if (!JSON.stringify(membersoutput).includes(userid)) {
+                        //console.log(group + '-Routine' + " " + JSON.stringify(driveresult));
+                        //console.log("The open slots is: " + result.openslots);
+                        if (driveresult.openslots < 1) {
+                            res.send("There are no open slots in drive id: " + driveid);
+                            console.log("The open slots is: " + driveresult.openslots);
+                            console.log("There are no open slots in drive id: " + driveid);
+                        } else {
+                            var updateddrive = driveresult;
+                            updateddrive.openslots = parseInt(updateddrive.openslots - 1).toString();
+                            var updateddrivemembers = updateddrive.drivemembers;
+                            if (updateddrivemembers === undefined)
+                                updateddrivemembers = [];
+                            updateddrivemembers.push(driverdetails);
+                            updateddrive.drivemembers = updateddrivemembers;
+
+
+                            db.collection(group + '-Routine').update(details, updateddrive, (err, result) => {
+                                if (err) {
+                                    res.send({'error': 'An error has occurred'});
+                                } else {
+                                    //Send back to front.
+                                    res.send(updateddrive);
+                                    console.log(updateddrive);
+                                }
+                            });
+
+                        }
                     }
                     else{
+                        res.send("The user id " + userid + " is already in the drive " + driveid);
+                        console.log("The user id " + userid + " is already in the drive " + driveid);
+                    }
+
+
+                });
+            } else {
+                res.send("The user id " + userid + " isn't part of the group " + group);
+                console.log("The user id " + userid + " isn't part of the group " + group);
+            }
+
+
+        })
+
+
+    });
+
+    app.put('/jointempdrive/:group/:userid/:driveid', (req, res) => {
+        const group = req.params.group.toLowerCase();
+        const userid = req.params.userid;
+        const driveid = req.params.driveid;
+        //console.log(userid)
+        const check = {'id': userid};
+
+        db.collection('Clients').findOne(check, function (err, userresult) {
+            if (err) throw err;
+            // console.log("This is the drivers details: " + JSON.stringify(userresult));
+            //console.log(JSON.stringify(userresult.groups));
+
+            var tempgroups = userresult.groups;
+            if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
+                tempgroups = [];
+
+            var output = tempgroups.filter(function (item) {
+                return item == group;
+            });
+            //console.log("*******" + output.includes(group));
+            if (output.includes(group)) {
+                const driverdetails = {
+                    'id': userid,
+                    'firstname': userresult.firstName,
+                    'lastname': userresult.lastName
+                };
+                //console.log("This is the drivers details: " + JSON.stringify(userresult));
+                //console.log("This is the drivers details: " + JSON.stringify(driverdetails));
+
+                const details = {'_id': new ObjectID(driveid)};
+                //console.log("This is the drive details: " + JSON.stringify(details));
+
+                db.collection(group + '-Temp').findOne(details, function (err, driveresult) {
+                    if (err) throw err;
+                    var tempdrivemembers = driveresult.drivemembers;
+
+
+                    if (tempdrivemembers == "" || tempdrivemembers === null || tempdrivemembers === undefined)
+                        tempdrivemembers = [];
+
+
+                    var membersoutput = tempdrivemembers.filter(function (item) {
+                        return item.id == userid;
+                    });
+
+
+                    if (!JSON.stringify(membersoutput).includes(userid)) {
+                        //console.log(group + '-Temp' + " " + JSON.stringify(driveresult));
+                        //console.log("The open slots is: " + result.openslots);
+                        if (driveresult.openslots < 1) {
+                            res.send("There are no open slots in drive id: " + driveid);
+                            console.log("The open slots is: " + driveresult.openslots);
+                            console.log("There are no open slots in drive id: " + driveid);
+                        } else {
+                            var updateddrive = driveresult;
+                            updateddrive.openslots = parseInt(updateddrive.openslots - 1).toString();
+                            var updateddrivemembers = updateddrive.drivemembers;
+                            if (updateddrivemembers === undefined)
+                                updateddrivemembers = [];
+                            updateddrivemembers.push(driverdetails);
+                            updateddrive.drivemembers = updateddrivemembers;
+
+
+                            db.collection(group + '-Temp').update(details, updateddrive, (err, result) => {
+                                if (err) {
+                                    res.send({'error': 'An error has occurred'});
+                                } else {
+                                    //Send back to front.
+                                    res.send(updateddrive);
+                                    console.log(updateddrive);
+                                }
+                            });
+
+                        }
+                    }
+                    else{
+                        res.send("The user id " + userid + " is already in the drive " + driveid);
+                        console.log("The user id " + userid + " is already in the drive " + driveid);
+                    }
+
+
+                });
+            } else {
+                res.send("The user id " + userid + " isn't part of the group " + group);
+                console.log("The user id " + userid + " isn't part of the group " + group);
+            }
+
+
+        })
+
+
+    });
+
+
+    app.put('/leaveroutinedrive/:group/:userid/:driveid', (req, res) => {
+        const group = req.params.group.toLowerCase();
+        const userid = req.params.userid;
+        const driveid = req.params.driveid;
+        //console.log(userid)
+        const check = {'id': userid};
+
+        db.collection('Clients').findOne(check, function (err, userresult) {
+            if (err) throw err;
+            // console.log("This is the drivers details: " + JSON.stringify(userresult));
+            //console.log(JSON.stringify(userresult.groups));
+            var tempgroups = userresult.groups;
+            if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
+                tempgroups = [];
+
+            var output = tempgroups.filter(function (item) {
+                return item == group;
+            });
+            //console.log("*******" + output.includes(group));
+            if (output.includes(group)) {
+                const driverdetails = {
+                    'id': userid,
+                    'firstname': userresult.firstName,
+                    'lastname': userresult.lastName
+                };
+                //console.log("This is the drivers details: " + JSON.stringify(userresult));
+                //console.log("This is the drivers details: " + JSON.stringify(driverdetails));
+
+                const details = {'_id': new ObjectID(driveid)};
+                //console.log("This is the drive details: " + JSON.stringify(details));
+
+                db.collection(group + '-Routine').findOne(details, function (err, driveresult) {
+                    if (err) throw err;
+                    var tempdrivemembers = driveresult.drivemembers;
+
+
+                    if (tempdrivemembers == "" || tempdrivemembers === null || tempdrivemembers === undefined)
+                        tempdrivemembers = [];
+
+
+                    var membersoutput = tempdrivemembers.filter(function (item) {
+                        return item.id == userid;
+                    });
+
+
+                    //console.log(group + '-Routine' + " " + JSON.stringify(driveresult.drivemembers));
+                    //console.log(group + '-Routine' + " " + JSON.stringify(membersoutput).includes(userid));
+                    //console.log("The open slots is: " + result.openslots);
+                    //console.log("******* " + driveresult.drivemembers);
+                    //console.log("******* " + membersoutput.id +" " + userid);
+                    if (!JSON.stringify(membersoutput).includes(userid)) {
+                        res.send("The user " + userid + " is not in drive id: " + driveid);
+                        console.log("The user " + userid + " is not in drive id: " + driveid);
+                    } else {
                         var updateddrive = driveresult;
-                        updateddrive.openslots = parseInt(updateddrive.openslots -1 ).toString();
+                        updateddrive.openslots = (parseInt(updateddrive.openslots)+1).toString();
                         var updateddrivemembers = updateddrive.drivemembers;
                         if (updateddrivemembers === undefined)
                             updateddrivemembers = [];
-                        updateddrivemembers.push(driverdetails);
+
+                        updateddrivemembers = updateddrivemembers.filter(function( obj ) {
+                            return obj.id !== userid;
+                        });
+
                         updateddrive.drivemembers = updateddrivemembers;
 
 
                         db.collection(group + '-Routine').update(details, updateddrive, (err, result) => {
                             if (err) {
-                                res.send({ 'error': 'An error has occurred' });
+                                res.send({'error': 'An error has occurred'});
                             } else {
                                 //Send back to front.
                                 res.send(updateddrive);
@@ -522,19 +647,112 @@ module.exports = function (app, db) {
 
 
                 });
-            }
-            else
-            {
+            } else {
                 res.send("The user id " + userid + " isn't part of the group " + group);
                 console.log("The user id " + userid + " isn't part of the group " + group);
             }
-
 
 
         })
 
 
     });
+
+    app.put('/leavetempdrive/:group/:userid/:driveid', (req, res) => {
+        const group = req.params.group.toLowerCase();
+        const userid = req.params.userid;
+        const driveid = req.params.driveid;
+        //console.log(userid)
+        const check = {'id': userid};
+
+        db.collection('Clients').findOne(check, function (err, userresult) {
+            if (err) throw err;
+            // console.log("This is the drivers details: " + JSON.stringify(userresult));
+            //console.log(JSON.stringify(userresult.groups));
+            var tempgroups = userresult.groups;
+            if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
+                tempgroups = [];
+
+            var output = tempgroups.filter(function (item) {
+                return item == group;
+            });
+            //console.log("*******" + output.includes(group));
+            if (output.includes(group)) {
+                const driverdetails = {
+                    'id': userid,
+                    'firstname': userresult.firstName,
+                    'lastname': userresult.lastName
+                };
+                //console.log("This is the drivers details: " + JSON.stringify(userresult));
+                //console.log("This is the drivers details: " + JSON.stringify(driverdetails));
+
+                const details = {'_id': new ObjectID(driveid)};
+                //console.log("This is the drive details: " + JSON.stringify(details));
+
+                db.collection(group + '-Temp').findOne(details, function (err, driveresult) {
+                    if (err) throw err;
+                    var tempdrivemembers = driveresult.drivemembers;
+
+
+                    if (tempdrivemembers == "" || tempdrivemembers === null || tempdrivemembers === undefined)
+                        tempdrivemembers = [];
+
+
+                    var membersoutput = tempdrivemembers.filter(function (item) {
+                        return item.id == userid;
+                    });
+
+
+                    //console.log(group + '-Temp' + " " + JSON.stringify(driveresult.drivemembers));
+                    //console.log(group + '-Temp' + " " + JSON.stringify(membersoutput).includes(userid));
+                    //console.log("The open slots is: " + result.openslots);
+                    //console.log("******* " + driveresult.drivemembers);
+                    //console.log("******* " + membersoutput.id +" " + userid);
+                    if (!JSON.stringify(membersoutput).includes(userid)) {
+                        res.send("The user " + userid + " is not in drive id: " + driveid);
+                        console.log("The user " + userid + " is not in drive id: " + driveid);
+                    } else {
+                        var updateddrive = driveresult;
+                        updateddrive.openslots = (parseInt(updateddrive.openslots)+1).toString();
+                        var updateddrivemembers = updateddrive.drivemembers;
+                        if (updateddrivemembers === undefined)
+                            updateddrivemembers = [];
+
+                        updateddrivemembers = updateddrivemembers.filter(function( obj ) {
+                            return obj.id !== userid;
+                        });
+
+                        updateddrive.drivemembers = updateddrivemembers;
+
+
+                        db.collection(group + '-Temp').update(details, updateddrive, (err, result) => {
+                            if (err) {
+                                res.send({'error': 'An error has occurred'});
+                            } else {
+                                //Send back to front.
+                                res.send(updateddrive);
+                                console.log(updateddrive);
+                            }
+                        });
+
+                    }
+
+
+                });
+            } else {
+                res.send("The user id " + userid + " isn't part of the group " + group);
+                console.log("The user id " + userid + " isn't part of the group " + group);
+            }
+
+
+        })
+
+
+    });
+
+
+
+
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
     /* HTTP Methods examples:
 
