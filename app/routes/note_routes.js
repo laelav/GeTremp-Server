@@ -1,5 +1,9 @@
 module.exports = function (app, db) {
     var ObjectID = require('mongodb').ObjectID;
+    var util = require('util');
+    var iconv = require('iconv-lite');
+    const utf8 = require('utf8');
+
 
     //CREATE
     //Postman: POST:localhost:8000/register
@@ -15,8 +19,6 @@ module.exports = function (app, db) {
             image: req.body.image,
             groups: req.body.groups
         };
-        //const note = { text: req.body.body, title: req.body.title };
-        //console.log(req.body.id);
         console.log("Register in progress " + req.body.id);
         db.collection('Clients').insert(note, (err, result) => {
             if (err) {
@@ -60,10 +62,8 @@ module.exports = function (app, db) {
 
 
         const check = {'id': req.body.userid};
-        //console.log(check);
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
-            //console.log("this is the result: " + result);
             let thegroups = result.groups;
 
             var hasGroupFlag = 0;
@@ -121,10 +121,8 @@ module.exports = function (app, db) {
 
 
         const check = {'id': req.body.userid};
-        //console.log(check);
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
-            //console.log(result);
             let thegroups = result.groups;
 
             var hasGroupFlag = 0;
@@ -138,7 +136,6 @@ module.exports = function (app, db) {
                     res.send({'error': 'An error has occurred in Get /getallgroups.'});
                 } else {
                     //Send back to front.
-                    //console.log(result);
                     for (var i = 0; i < result.length; i++) {
                         if (result[i].name == req.body.group.toLowerCase()) {
                             console.log(result[i].name + " + " + req.body.group.toLowerCase())
@@ -163,7 +160,6 @@ module.exports = function (app, db) {
 
                 }
             });
-            //console.log("hasgroup is: " +hasGroupFlag + " groupexistflag is: " + GroupExistFlag);
 
         });
     });
@@ -206,7 +202,6 @@ module.exports = function (app, db) {
         const check = {'id': id};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
-            //console.log(result);
             let thegroups = result.groups;
             var flag = 0;
 
@@ -244,7 +239,6 @@ module.exports = function (app, db) {
         const check = {'id': id};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
-            //console.log(JSON.stringify(result));
             let thegroups = result.groups;
             var flag = 0;
 
@@ -318,7 +312,6 @@ module.exports = function (app, db) {
             } else {
                 //Send back to front.
                 var ifDriveExistFlag = 0;
-                //console.log(result);
                 for (var i = 0; i < result.length; i++) {
                     if (driveid == result[i]._id) {
                         ifDriveExistFlag = 1;
@@ -356,7 +349,6 @@ module.exports = function (app, db) {
             } else {
                 //Send back to front.
                 var ifDriveExistFlag = 0;
-                //console.log(result);
                 for (var i = 0; i < result.length; i++) {
                     if (driveid == result[i]._id) {
                         ifDriveExistFlag = 1;
@@ -383,13 +375,10 @@ module.exports = function (app, db) {
         const group = req.params.group.toLowerCase();
         const userid = req.params.userid;
         const driveid = req.params.driveid;
-        //console.log(userid)
         const check = {'id': userid};
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            // console.log("This is the drivers details: " + JSON.stringify(userresult));
-            //console.log(JSON.stringify(userresult.groups));
             var tempgroups = userresult.groups;
             if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
                 tempgroups = [];
@@ -397,18 +386,15 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            //console.log("*******" + output.includes(group));
             if (output.includes(group)) {
                 const driverdetails = {
                     'id': userid,
                     'firstname': userresult.firstName,
                     'lastname': userresult.lastName
                 };
-                //console.log("This is the drivers details: " + JSON.stringify(userresult));
-                //console.log("This is the drivers details: " + JSON.stringify(driverdetails));
+
 
                 const details = {'_id': new ObjectID(driveid)};
-                //console.log("This is the drive details: " + JSON.stringify(details));
 
                 db.collection(group + '-Routine').findOne(details, function (err, driveresult) {
                     if (err) throw err;
@@ -426,8 +412,6 @@ module.exports = function (app, db) {
 
 
                     if (!JSON.stringify(membersoutput).includes(userid)) {
-                        //console.log(group + '-Routine' + " " + JSON.stringify(driveresult));
-                        //console.log("The open slots is: " + result.openslots);
                         if (driveresult.openslots < 1) {
                             res.send("There are no open slots in drive id: " + driveid);
                             console.log("The open slots is: " + driveresult.openslots);
@@ -475,13 +459,10 @@ module.exports = function (app, db) {
         const group = req.params.group.toLowerCase();
         const userid = req.params.userid;
         const driveid = req.params.driveid;
-        //console.log(userid)
         const check = {'id': userid};
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            // console.log("This is the drivers details: " + JSON.stringify(userresult));
-            //console.log(JSON.stringify(userresult.groups));
 
             var tempgroups = userresult.groups;
             if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
@@ -490,18 +471,15 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            //console.log("*******" + output.includes(group));
             if (output.includes(group)) {
                 const driverdetails = {
                     'id': userid,
                     'firstname': userresult.firstName,
                     'lastname': userresult.lastName
                 };
-                //console.log("This is the drivers details: " + JSON.stringify(userresult));
-                //console.log("This is the drivers details: " + JSON.stringify(driverdetails));
+
 
                 const details = {'_id': new ObjectID(driveid)};
-                //console.log("This is the drive details: " + JSON.stringify(details));
 
                 db.collection(group + '-Temp').findOne(details, function (err, driveresult) {
                     if (err) throw err;
@@ -518,8 +496,6 @@ module.exports = function (app, db) {
 
 
                     if (!JSON.stringify(membersoutput).includes(userid)) {
-                        //console.log(group + '-Temp' + " " + JSON.stringify(driveresult));
-                        //console.log("The open slots is: " + result.openslots);
                         if (driveresult.openslots < 1) {
                             res.send("There are no open slots in drive id: " + driveid);
                             console.log("The open slots is: " + driveresult.openslots);
@@ -568,13 +544,10 @@ module.exports = function (app, db) {
         const group = req.params.group.toLowerCase();
         const userid = req.params.userid;
         const driveid = req.params.driveid;
-        //console.log(userid)
         const check = {'id': userid};
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            // console.log("This is the drivers details: " + JSON.stringify(userresult));
-            //console.log(JSON.stringify(userresult.groups));
             var tempgroups = userresult.groups;
             if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
                 tempgroups = [];
@@ -582,18 +555,14 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            //console.log("*******" + output.includes(group));
             if (output.includes(group)) {
                 const driverdetails = {
                     'id': userid,
                     'firstname': userresult.firstName,
                     'lastname': userresult.lastName
                 };
-                //console.log("This is the drivers details: " + JSON.stringify(userresult));
-                //console.log("This is the drivers details: " + JSON.stringify(driverdetails));
 
                 const details = {'_id': new ObjectID(driveid)};
-                //console.log("This is the drive details: " + JSON.stringify(details));
 
                 db.collection(group + '-Routine').findOne(details, function (err, driveresult) {
                     if (err) throw err;
@@ -608,12 +577,6 @@ module.exports = function (app, db) {
                         return item.id == userid;
                     });
 
-
-                    //console.log(group + '-Routine' + " " + JSON.stringify(driveresult.drivemembers));
-                    //console.log(group + '-Routine' + " " + JSON.stringify(membersoutput).includes(userid));
-                    //console.log("The open slots is: " + result.openslots);
-                    //console.log("******* " + driveresult.drivemembers);
-                    //console.log("******* " + membersoutput.id +" " + userid);
                     if (!JSON.stringify(membersoutput).includes(userid)) {
                         res.send("The user " + userid + " is not in drive id: " + driveid);
                         console.log("The user " + userid + " is not in drive id: " + driveid);
@@ -660,13 +623,10 @@ module.exports = function (app, db) {
         const group = req.params.group.toLowerCase();
         const userid = req.params.userid;
         const driveid = req.params.driveid;
-        //console.log(userid)
         const check = {'id': userid};
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            // console.log("This is the drivers details: " + JSON.stringify(userresult));
-            //console.log(JSON.stringify(userresult.groups));
             var tempgroups = userresult.groups;
             if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
                 tempgroups = [];
@@ -674,18 +634,15 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            //console.log("*******" + output.includes(group));
             if (output.includes(group)) {
                 const driverdetails = {
                     'id': userid,
                     'firstname': userresult.firstName,
                     'lastname': userresult.lastName
                 };
-                //console.log("This is the drivers details: " + JSON.stringify(userresult));
-                //console.log("This is the drivers details: " + JSON.stringify(driverdetails));
+
 
                 const details = {'_id': new ObjectID(driveid)};
-                //console.log("This is the drive details: " + JSON.stringify(details));
 
                 db.collection(group + '-Temp').findOne(details, function (err, driveresult) {
                     if (err) throw err;
@@ -701,11 +658,6 @@ module.exports = function (app, db) {
                     });
 
 
-                    //console.log(group + '-Temp' + " " + JSON.stringify(driveresult.drivemembers));
-                    //console.log(group + '-Temp' + " " + JSON.stringify(membersoutput).includes(userid));
-                    //console.log("The open slots is: " + result.openslots);
-                    //console.log("******* " + driveresult.drivemembers);
-                    //console.log("******* " + membersoutput.id +" " + userid);
                     if (!JSON.stringify(membersoutput).includes(userid)) {
                         res.send("The user " + userid + " is not in drive id: " + driveid);
                         console.log("The user " + userid + " is not in drive id: " + driveid);
@@ -748,92 +700,85 @@ module.exports = function (app, db) {
 
     });
 
+    app.post('/searchroutinedrive/:group/:userid', (req, res) => {
 
-    //-----------------------------------------------------------------------------------------------------------------------------------------------------
-    /* HTTP Methods examples:
+        const group = req.params.group.toLowerCase();
+        const userid = req.params.userid;
+        const textforsearch = req.body.textforsearch;
+        console.log(textforsearch);
 
+        const check = {'id': userid};
 
-        //CREATE
-        //Postman: POST:localhost:8000/register
-        //Insert data into the DB.
-        app.post('/register', (req, res) => {
-            const note = { text: req.body.body, title: req.body.title };
-            //console.log(req.body.id);
-            console.log("Register in progress " +req.body.id);
-            db.collection('Clients').insert(note, (err, result) => {
-                if (err) {
-                    res.send({ 'error': 'An error has occurred in Post /register.' });
-                } else {
-                    //Send back to front.
-                    res.send(result.ops[0]);
-                }
+        db.collection('Clients').findOne(check, function (err, userresult) {
+            if (err) throw err;
+
+            var tempgroups = userresult.groups;
+            if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
+                tempgroups = [];
+
+            var output = tempgroups.filter(function (item) {
+                return item == group;
             });
+            if (output.includes(group)) {
+                const checkbeginciry = {'begincity': textforsearch};
+                const checkendciry = {'endcity': textforsearch};
+                db.collection(group + '-Routine').find(checkbeginciry).toArray(function (err, begincityresult) {
+                    if (err) throw err;
+
+                    db.collection(group + '-Routine').find(checkendciry).toArray(function (err, endcityresult) {
+                        if (err) throw err;
+                        var output = begincityresult.concat(endcityresult);
+                        res.send(output);
+                        console.log(output);
+                    });
+                });
+            } else {
+                res.send("The user id " + userid + " isn't part of the group " + group);
+                console.log("The user id " + userid + " isn't part of the group " + group);
+            }
         });
 
+    });
 
-        //READ
-        //Postman: GET:localhost:8000/notes/5c0a57c4ceb48c3f804d58f9
-        //Search for item's id in DB and sending back to front.
-        app.get('/notes/:id', (req, res) => {
-            //getting the id from the url.
-            const id = req.params.id;
+    app.post('/searchtempdrive/:group/:userid', (req, res) => {
 
-            //making a Json with "ObjectID".
-            const details = { '_id': new ObjectID(id) };
+        const group = req.params.group.toLowerCase();
+        const userid = req.params.userid;
+        const textforsearch = req.body.textforsearch;
+        console.log(textforsearch);
 
-            //search the collection "MyCollection" for var details and put result in item.
-            db.collection('MyCollection').findOne(details, (err, item) => {
-                if (err) {
-                    res.send({ 'error': 'An error has occurred in Get-id' });
-                } else {
-                    //Send back to front.
-                    res.send(item);
-                }
+        const check = {'id': userid};
+
+        db.collection('Clients').findOne(check, function (err, userresult) {
+            if (err) throw err;
+
+            var tempgroups = userresult.groups;
+            if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
+                tempgroups = [];
+
+            var output = tempgroups.filter(function (item) {
+                return item == group;
             });
+            if (output.includes(group)) {
+                const checkbeginciry = {'begincity': textforsearch};
+                const checkendciry = {'endcity': textforsearch};
+                db.collection(group + '-Temp').find(checkbeginciry).toArray(function (err, begincityresult) {
+                    if (err) throw err;
+
+                    db.collection(group + '-Temp').find(checkendciry).toArray(function (err, endcityresult) {
+                        if (err) throw err;
+                        var output = begincityresult.concat(endcityresult);
+                        res.send(output);
+                        console.log(output);
+                    });
+                });
+            } else {
+                res.send("The user id " + userid + " isn't part of the group " + group);
+                console.log("The user id " + userid + " isn't part of the group " + group);
+            }
         });
 
-        //DELETE
-        //Postman: DELETE:localhost:8000/notes/5c0a57c4ceb48c3f804d58f9
-        //Search for item's id in DB and deleting it.
-        app.delete('/notes/:id', (req, res) => {
-            //getting the id from the url.
-            const id = req.params.id;
-            //making a Json with "ObjectID".
-            const details = { '_id': new ObjectID(id) };
-            //search the collection "MyCollection" for var details and delete the item.
-            db.collection('MyCollection').remove(details, (err, item) => {
-                if (err) {
-                    res.send({ 'error': 'An error has occurred in delete-id' });
-                } else {
-                    //Send back to front.
-                    res.send('Note ' + id + ' deleted!');
-                }
-            });
-        });
+    });
 
-
-        //UPDADTE
-        //Postman: PUT:localhost:8000/notes/5c0a57c4ceb48c3f804d58f9
-        //Search for item's id in DB and updating it.
-        app.put('/notes/:id', (req, res) => {
-            //getting the id from the url.
-            const id = req.params.id;
-            //making a Json with "ObjectID".
-            const details = { '_id': new ObjectID(id) };
-            //the note with the changes from the front.
-            const note = { text: req.body.body, title: req.body.title };
-            //search the collection "MyCollection" for var details and update it.
-            db.collection('MyCollection').update(details, note, (err, result) => {
-                if (err) {
-                    res.send({ 'error': 'An error has occurred' });
-                } else {
-                    //Send back to front.
-                    res.send(note);
-                }
-            });
-        });
-
-
-    */
 
 };
