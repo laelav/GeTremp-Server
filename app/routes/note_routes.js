@@ -345,9 +345,10 @@ module.exports = function (app, db) {
                 } else {
                     //Send back to front.
                     for (var i = 0; i < result.length; i++) {
-                        if (result[i] == req.body.group.toLowerCase())
+                        if (result[i].name == req.body.group.toLowerCase())
                             GroupExistFlag = 1;
                     }
+                    //console.log(hasGroupFlag + " " + GroupExistFlag);
 
                     if (hasGroupFlag == 1 && GroupExistFlag == 1) {
                         db.collection(req.body.group.toLowerCase() + "-Routine").insert(note, (err, result) => {
@@ -404,7 +405,6 @@ module.exports = function (app, db) {
                     //Send back to front.
                     for (var i = 0; i < result.length; i++) {
                         if (result[i].name == req.body.group.toLowerCase()) {
-                            console.log(result[i].name + " + " + req.body.group.toLowerCase())
                             GroupExistFlag = 1;
                         }
 
