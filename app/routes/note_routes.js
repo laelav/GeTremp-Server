@@ -8,8 +8,25 @@ module.exports = function (app, db) {
     function customTemp_sort(a, b) {
         return new Date(a.date).getTime() - new Date(b.date).getTime();
     }
+
     function customRoutine_sort(a, b) {
         return (new Date(a.startdate).getTime() + a.frequency) - (new Date(b.startdate).getTime() + b.frequency);
+    }
+
+    function custom_sort(a, b) {
+        return b.count - a.count;
+    }
+
+    function removeDuplicate(arr, prop) {
+        var new_arr = [];
+        var lookup = {};
+        for (var i in arr) {
+            lookup[arr[i][prop]] = arr[i];
+        }
+        for (i in lookup) {
+            new_arr.push(lookup[i]);
+        }
+        return new_arr;
     }
 
     //CREATE
@@ -195,13 +212,11 @@ module.exports = function (app, db) {
                                 if (JSON.stringify(output2).includes(req.params.userid)) {
                                     console.log("This userid " + req.params.userid + " is already an admin of this group " + group);
                                     res.send("This userid " + req.params.userid + " is already an admin of this group " + group);
-                                }
-                                else{
-                                    if (updatedgroupresult.adminid.length > 4){
+                                } else {
+                                    if (updatedgroupresult.adminid.length > 4) {
                                         console.log("The number of admins in group " + group + " is already 5")
                                         res.send("The number of admins in group " + group + " is already 5");
-                                    }
-                                    else{
+                                    } else {
                                         updatedgroupresult.adminid.push(req.params.userid);
                                         db.collection('AppGroups').update(checkgroup, updatedgroupresult, (err, result1) => {
                                             if (err) throw err;
@@ -280,12 +295,11 @@ module.exports = function (app, db) {
                                         db.collection('AppGroups').update(checkgroup, updatedgroupsadmin, (err, result1) => {
                                             if (err) throw err;
                                             console.log(updatedgroupsadmin);
-                                            res.send(JSON.stringify(updateduserresult) +"\n" + JSON.stringify(updatedgroupsadmin));
+                                            res.send(JSON.stringify(updateduserresult) + "\n" + JSON.stringify(updatedgroupsadmin));
 
                                         });
 
-                                    }
-                                    else
+                                    } else
                                         res.send(updateduserresult);
 
 
@@ -995,7 +1009,51 @@ module.exports = function (app, db) {
 
                     db.collection(group + '-Routine').find(checkendciry).toArray(function (err, endcityresult) {
                         if (err) throw err;
+                        db.collection('Clients-History').findOne(check, function (err, userhistoryresult) {
+                            if (err) throw err;
+                            if (userhistoryresult == null) {
+                                const newuserhistory = {
+                                    'id': userid,
+                                    'searches': [{
+                                        'name': textforsearch,
+                                        'count': "1"
+                                    }]
+                                };
+                                db.collection('Clients-History').insert(newuserhistory, (err, result) => {
+                                    if (err) throw err;
+                                });
+                            } else {
+                                var updateduserhistory = userhistoryresult;
+                                var output1 = updateduserhistory.searches.filter(function (item) {
+                                    return item.name == textforsearch;
+                                });
+
+                                if (JSON.stringify(output1).includes(textforsearch)) {
+                                    for (var i in updateduserhistory.searches) {
+                                        var item = updateduserhistory.searches[i];
+
+                                        if (item.name == textforsearch) {
+                                            item.count = (parseInt(item.count) + 1).toString();
+                                        }
+                                    }
+                                    db.collection('Clients-History').update(check, updateduserhistory, (err, result) => {
+                                        if (err) throw err;
+                                    });
+                                } else {
+                                    const newsearch = {
+                                        'name': textforsearch,
+                                        'count': "1"
+                                    };
+                                    updateduserhistory.searches.push(newsearch);
+                                    db.collection('Clients-History').update(check, updateduserhistory, (err, result) => {
+                                        if (err) throw err;
+                                    });
+                                }
+
+                            }
+                        });
                         var output = begincityresult.concat(endcityresult);
+                        output.sort(customRoutine_sort);
                         res.send(output);
                         console.log(output);
                     });
@@ -1035,7 +1093,51 @@ module.exports = function (app, db) {
 
                     db.collection(group + '-Temp').find(checkendciry).toArray(function (err, endcityresult) {
                         if (err) throw err;
+                        db.collection('Clients-History').findOne(check, function (err, userhistoryresult) {
+                            if (err) throw err;
+                            if (userhistoryresult == null) {
+                                const newuserhistory = {
+                                    'id': userid,
+                                    'searches': [{
+                                        'name': textforsearch,
+                                        'count': "1"
+                                    }]
+                                };
+                                db.collection('Clients-History').insert(newuserhistory, (err, result) => {
+                                    if (err) throw err;
+                                });
+                            } else {
+                                var updateduserhistory = userhistoryresult;
+                                var output1 = updateduserhistory.searches.filter(function (item) {
+                                    return item.name == textforsearch;
+                                });
+
+                                if (JSON.stringify(output1).includes(textforsearch)) {
+                                    for (var i in updateduserhistory.searches) {
+                                        var item = updateduserhistory.searches[i];
+
+                                        if (item.name == textforsearch) {
+                                            item.count = (parseInt(item.count) + 1).toString();
+                                        }
+                                    }
+                                    db.collection('Clients-History').update(check, updateduserhistory, (err, result) => {
+                                        if (err) throw err;
+                                    });
+                                } else {
+                                    const newsearch = {
+                                        'name': textforsearch,
+                                        'count': "1"
+                                    };
+                                    updateduserhistory.searches.push(newsearch);
+                                    db.collection('Clients-History').update(check, updateduserhistory, (err, result) => {
+                                        if (err) throw err;
+                                    });
+                                }
+
+                            }
+                        });
                         var output = begincityresult.concat(endcityresult);
+                        output.sort(customTemp_sort);
                         res.send(output);
                         console.log(output);
                     });
@@ -1046,6 +1148,208 @@ module.exports = function (app, db) {
             }
         });
 
+    });
+
+
+    app.get('/getrecommendedroutinedrives/:group/:userid', (req, res) => {
+        const userid = req.params.userid;
+        const group = req.params.group.toLowerCase();
+
+        const check = {'id': userid};
+
+        db.collection('Clients').findOne(check, function (err, userresult) {
+            if (err) throw err;
+            if (userresult != null) {
+                var tempgroups = userresult.groups;
+                if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
+                    tempgroups = [];
+
+                var output = tempgroups.filter(function (item) {
+                    return item == group;
+                });
+                if (output.includes(group)) {
+                    db.collection('Clients-History').findOne(check, function (err, userhistoryresult) {
+                        if (err) throw err;
+                        if (userhistoryresult != null) {
+                            userhistoryresult.searches.sort(custom_sort);
+                            var totalresults = [];
+                            var length = userhistoryresult.searches.length;
+                            if (length > 3)
+                                length = 3;
+
+
+                            var checkbeginciry = {'begincity': userhistoryresult.searches[0].name};
+                            var checkendciry = {'endcity': userhistoryresult.searches[0].name};
+                            db.collection(group + '-Routine').findOne(checkbeginciry, function (err, begincityresult) {
+                                if (err) throw err;
+
+                                db.collection(group + '-Routine').findOne(checkendciry, function (err, endcityresult) {
+                                    if (err) throw err;
+                                    if (begincityresult != null)
+                                        totalresults.push(begincityresult);
+                                    if (endcityresult != null)
+                                        totalresults.push(endcityresult);
+
+                                    if (length > 1) {
+                                        checkbeginciry = {'begincity': userhistoryresult.searches[1].name};
+                                        checkendciry = {'endcity': userhistoryresult.searches[1].name};
+                                        db.collection(group + '-Routine').findOne(checkbeginciry, function (err, begincityresult1) {
+                                            if (err) throw err;
+
+                                            db.collection(group + '-Routine').findOne(checkendciry, function (err, endcityresult1) {
+                                                if (err) throw err;
+                                                if (begincityresult1 != null)
+                                                    totalresults.push(begincityresult1);
+                                                if (endcityresult1 != null)
+                                                    totalresults.push(endcityresult1);
+
+                                                if (length > 2) {
+                                                    checkbeginciry = {'begincity': userhistoryresult.searches[2].name};
+                                                    checkendciry = {'endcity': userhistoryresult.searches[2].name};
+                                                    db.collection(group + '-Routine').findOne(checkbeginciry, function (err, begincityresult2) {
+                                                        if (err) throw err;
+
+                                                        db.collection(group + '-Routine').findOne(checkendciry, function (err, endcityresult2) {
+                                                            if (err) throw err;
+                                                            if (begincityresult2 != null)
+                                                                totalresults.push(begincityresult2);
+                                                            if (endcityresult2 != null)
+                                                                totalresults.push(endcityresult2);
+
+                                                            totalresults = removeDuplicate(totalresults,"_id");
+                                                            console.log(totalresults);
+                                                            res.send(totalresults);
+                                                        });
+                                                    });
+                                                } else {
+                                                    totalresults = removeDuplicate(totalresults,"_id");
+                                                    console.log(totalresults);
+                                                    res.send(totalresults);
+                                                }
+                                            });
+                                        });
+                                    } else {
+                                        totalresults = removeDuplicate(totalresults,"_id");
+                                        console.log(totalresults);
+                                        res.send(totalresults);
+                                    }
+                                });
+                            });
+                        } else {
+                            res.send("The user id " + userid + " has no search history");
+                            console.log("The user id " + userid + " has no search history");
+                        }
+                    });
+                } else {
+                    res.send("The user id " + userid + " isn't part of the group " + group);
+                    console.log("The user id " + userid + " isn't part of the group " + group);
+                }
+            } else {
+                console.log("This user doesn't exist");
+                res.send("This user doesn't exist");
+            }
+        });
+    });
+
+
+    app.get('/getrecommendedtempdrives/:group/:userid', (req, res) => {
+        const userid = req.params.userid;
+        const group = req.params.group.toLowerCase();
+
+        const check = {'id': userid};
+
+        db.collection('Clients').findOne(check, function (err, userresult) {
+            if (err) throw err;
+            if (userresult != null) {
+                var tempgroups = userresult.groups;
+                if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
+                    tempgroups = [];
+
+                var output = tempgroups.filter(function (item) {
+                    return item == group;
+                });
+                if (output.includes(group)) {
+                    db.collection('Clients-History').findOne(check, function (err, userhistoryresult) {
+                        if (err) throw err;
+                        if (userhistoryresult != null) {
+                            userhistoryresult.searches.sort(custom_sort);
+                            var totalresults = [];
+                            var length = userhistoryresult.searches.length;
+                            if (length > 3)
+                                length = 3;
+
+
+                            var checkbeginciry = {'begincity': userhistoryresult.searches[0].name};
+                            var checkendciry = {'endcity': userhistoryresult.searches[0].name};
+                            db.collection(group + '-Temp').findOne(checkbeginciry, function (err, begincityresult) {
+                                if (err) throw err;
+
+                                db.collection(group + '-Temp').findOne(checkendciry, function (err, endcityresult) {
+                                    if (err) throw err;
+                                    if (begincityresult != null)
+                                        totalresults.push(begincityresult);
+                                    if (endcityresult != null)
+                                        totalresults.push(endcityresult);
+
+                                    if (length > 1) {
+                                        checkbeginciry = {'begincity': userhistoryresult.searches[1].name};
+                                        checkendciry = {'endcity': userhistoryresult.searches[1].name};
+                                        db.collection(group + '-Temp').findOne(checkbeginciry, function (err, begincityresult1) {
+                                            if (err) throw err;
+
+                                            db.collection(group + '-Temp').findOne(checkendciry, function (err, endcityresult1) {
+                                                if (err) throw err;
+                                                if (begincityresult1 != null)
+                                                    totalresults.push(begincityresult1);
+                                                if (endcityresult1 != null)
+                                                    totalresults.push(endcityresult1);
+
+                                                if (length > 2) {
+                                                    checkbeginciry = {'begincity': userhistoryresult.searches[2].name};
+                                                    checkendciry = {'endcity': userhistoryresult.searches[2].name};
+                                                    db.collection(group + '-Temp').findOne(checkbeginciry, function (err, begincityresult2) {
+                                                        if (err) throw err;
+
+                                                        db.collection(group + '-Temp').findOne(checkendciry, function (err, endcityresult2) {
+                                                            if (err) throw err;
+                                                            if (begincityresult2 != null)
+                                                                totalresults.push(begincityresult2);
+                                                            if (endcityresult2 != null)
+                                                                totalresults.push(endcityresult2);
+
+                                                            totalresults = removeDuplicate(totalresults,"_id");
+                                                            console.log(totalresults);
+                                                            res.send(totalresults);
+                                                        });
+                                                    });
+                                                } else {
+                                                    totalresults = removeDuplicate(totalresults,"_id");
+                                                    console.log(totalresults);
+                                                    res.send(totalresults);
+                                                }
+                                            });
+                                        });
+                                    } else {
+                                        totalresults = removeDuplicate(totalresults,"_id");
+                                        console.log(totalresults);
+                                        res.send(totalresults);
+                                    }
+                                });
+                            });
+                        } else {
+                            res.send("The user id " + userid + " has no search history");
+                            console.log("The user id " + userid + " has no search history");
+                        }
+                    });
+                } else {
+                    res.send("The user id " + userid + " isn't part of the group " + group);
+                    console.log("The user id " + userid + " isn't part of the group " + group);
+                }
+            } else {
+                console.log("This user doesn't exist");
+                res.send("This user doesn't exist");
+            }
+        });
     });
 
 
