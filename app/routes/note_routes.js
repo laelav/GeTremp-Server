@@ -1,8 +1,5 @@
 module.exports = function (app, db) {
-    var ObjectID = require('mongodb').ObjectID;
-    var util = require('util');
-    var iconv = require('iconv-lite');
-    const utf8 = require('utf8');
+    const ObjectID = require('mongodb').ObjectID;
 
 
     function customTemp_sort(a, b) {
@@ -174,6 +171,7 @@ module.exports = function (app, db) {
             }
         });
     });
+
     app.put('/addadminbyadmin/:group/:adminid/:userid', (req, res) => {
         const group = req.params.group.toLowerCase();
         const checkuserid = {'id': req.params.userid};
@@ -548,6 +546,7 @@ module.exports = function (app, db) {
     });
 
 
+/*
     app.get('/getallroutinedrivesbyadmin/:group', (req, res) => {
         const group = req.params.group.toLowerCase();
 
@@ -562,7 +561,8 @@ module.exports = function (app, db) {
             }
         });
     });
-
+*/
+/*
     app.get('/getalltempdrivesbyadmin/:group', (req, res) => {
         const group = req.params.group.toLowerCase();
 
@@ -577,6 +577,7 @@ module.exports = function (app, db) {
             }
         });
     });
+*/
 
 
     app.delete('/deleteroutinedrive/:group/:userid/:driveid', (req, res) => {
@@ -652,6 +653,7 @@ module.exports = function (app, db) {
             }
         });
     });
+
 
     app.put('/joinroutinedrive/:group/:userid/:driveid', (req, res) => {
         const group = req.params.group.toLowerCase();
@@ -982,6 +984,7 @@ module.exports = function (app, db) {
 
     });
 
+
     app.post('/searchroutinedrive/:group/:userid', (req, res) => {
 
         const group = req.params.group.toLowerCase();
@@ -1250,7 +1253,6 @@ module.exports = function (app, db) {
             }
         });
     });
-
 
     app.get('/getrecommendedtempdrives/:group/:userid', (req, res) => {
         const userid = req.params.userid;
