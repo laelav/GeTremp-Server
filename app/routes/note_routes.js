@@ -46,7 +46,9 @@ module.exports = function (app, db) {
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            if (JSON.stringify(userresult) == null) {
+            console.log(userresult);
+            console.log(JSON.stringify(userresult));
+            if (userresult === null) {
                 console.log("Register in progress " + req.body.id);
                 db.collection('Clients').insert(note, (err, result) => {
                     if (err) {
@@ -57,8 +59,8 @@ module.exports = function (app, db) {
                     }
                 });
             } else {
-                res.send("There is already a user with this userid" + req.body.id);
-                console.log("There is already a user with this userid" + req.body.id);
+                res.send("There is already a user with this userid " + req.body.id);
+                console.log("There is already a user with this userid " + req.body.id);
 
             }
 
