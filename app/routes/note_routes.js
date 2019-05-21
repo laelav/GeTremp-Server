@@ -46,8 +46,6 @@ module.exports = function (app, db) {
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            console.log(userresult);
-            console.log(JSON.stringify(userresult));
             if (userresult === null) {
                 console.log("Register in progress " + req.body.id);
                 db.collection('Clients').insert(note, (err, result) => {
@@ -1223,12 +1221,14 @@ module.exports = function (app, db) {
                                                                 totalresults.push(endcityresult2);
 
                                                             totalresults = removeDuplicate(totalresults,"_id");
+                                                            totalresults.sort(customRoutine_sort);
                                                             console.log(totalresults);
                                                             res.send(totalresults);
                                                         });
                                                     });
                                                 } else {
                                                     totalresults = removeDuplicate(totalresults,"_id");
+                                                    totalresults.sort(customRoutine_sort);
                                                     console.log(totalresults);
                                                     res.send(totalresults);
                                                 }
@@ -1236,6 +1236,7 @@ module.exports = function (app, db) {
                                         });
                                     } else {
                                         totalresults = removeDuplicate(totalresults,"_id");
+                                        totalresults.sort(customRoutine_sort);
                                         console.log(totalresults);
                                         res.send(totalresults);
                                     }
@@ -1323,12 +1324,14 @@ module.exports = function (app, db) {
                                                                 totalresults.push(endcityresult2);
 
                                                             totalresults = removeDuplicate(totalresults,"_id");
+                                                            totalresults.sort(customTemp_sort);
                                                             console.log(totalresults);
                                                             res.send(totalresults);
                                                         });
                                                     });
                                                 } else {
                                                     totalresults = removeDuplicate(totalresults,"_id");
+                                                    totalresults.sort(customTemp_sort);
                                                     console.log(totalresults);
                                                     res.send(totalresults);
                                                 }
@@ -1336,6 +1339,7 @@ module.exports = function (app, db) {
                                         });
                                     } else {
                                         totalresults = removeDuplicate(totalresults,"_id");
+                                        totalresults.sort(customTemp_sort);
                                         console.log(totalresults);
                                         res.send(totalresults);
                                     }
