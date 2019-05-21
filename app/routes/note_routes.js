@@ -369,8 +369,8 @@ module.exports = function (app, db) {
                                 res.send({'error': 'An error has occurred in Post /addroutinedrive.'});
                             } else {
                                 //Send back to front.
-                                console.log(result.ops[0]._id + " The drive has been added successfully!");
-                                res.send(result.ops[0]._id + " The drive has been added successfully!");
+                                console.log("The drive has been added successfully!");
+                                res.send("The drive has been added successfully!");
                             }
                         });
                     } else {
@@ -428,8 +428,8 @@ module.exports = function (app, db) {
                                 res.send({'error': 'An error has occurred in Post /addtempdrive.'});
                             } else {
                                 //Send back to front.
-                                console.log(result.ops[0]._id + " The drive has been added successfully!");
-                                res.send(result.ops[0]._id + " The drive has been added successfully!");
+                                console.log("The drive has been added successfully!");
+                                res.send("The drive has been added successfully!");
                             }
                         });
                     } else {
