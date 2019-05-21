@@ -53,7 +53,7 @@ module.exports = function (app, db) {
                         res.send({'error': 'An error has occurred in Post /register.'});
                     } else {
                         //Send back to front.
-                        res.send(result.ops[0]);
+                        res.send("User added successfully");
                     }
                 });
             } else {
@@ -102,7 +102,7 @@ module.exports = function (app, db) {
                                 db.collection('Clients').update(check, updateduser, (err, result1) => {
                                     if (err) throw err;
                                     console.log(result.ops[0]);
-                                    res.send(result.ops[0]);
+                                    res.send("Group added");
 
                                 });
 
