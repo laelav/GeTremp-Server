@@ -1063,6 +1063,7 @@ module.exports = function (app, db) {
                         });
                         var output = begincityresult.concat(endcityresult);
                         output.sort(customRoutine_sort);
+                        output = removeDuplicate(output,"_id");
                         res.send(output);
                         console.log(output);
                     });
@@ -1147,6 +1148,7 @@ module.exports = function (app, db) {
                         });
                         var output = begincityresult.concat(endcityresult);
                         output.sort(customTemp_sort);
+                        output = removeDuplicate(output,"_id");
                         res.send(output);
                         console.log(output);
                     });
