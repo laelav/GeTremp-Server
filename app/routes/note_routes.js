@@ -342,7 +342,10 @@ module.exports = function (app, db) {
         const check = {'id': req.body.userid};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
-            let thegroups = result.groups;
+            var thegroups = [];
+            if (result !== null)
+                thegroups = result.groups;
+
 
             var hasGroupFlag = 0;
             var GroupExistFlag = 0;
@@ -403,7 +406,9 @@ module.exports = function (app, db) {
         const check = {'id': req.body.userid};
         db.collection('Clients').findOne(check, function (err, result) {
             if (err) throw err;
-            let thegroups = result.groups;
+            var thegroups = [];
+            if (result !== null)
+                thegroups = result.groups;
 
             var hasGroupFlag = 0;
             var GroupExistFlag = 0;
