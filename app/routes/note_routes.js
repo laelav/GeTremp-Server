@@ -72,48 +72,54 @@ module.exports = function (app, db) {
             adminid: [req.body.adminid],
             image: req.body.image
         };
-        db.collection('AppGroups').find({}).toArray(function (err, groupsresult) {
+        const check = {'id': req.body.adminid};
+        db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            else {
-                var output = groupsresult.filter(function (item) {
-                    return item.name === groupname;
-                });
+            var updateduser = userresult;
+            if (updateduser === null) {
+                console.log("There is no user with this id.");
+                res.send("There is no user with this id.");
+            } else {
 
-                if (JSON.stringify(output).includes(groupname)) {
-                    res.send("There is already a group with the name " + groupname);
-                    console.log("There is already a group with the name " + groupname);
-                } else {
-                    console.log("Register in progress " + groupname);
-                    db.createCollection(groupname + "-Routine");
-                    db.createCollection(groupname + "-Temp");
-                    db.collection('AppGroups').insert(note, (err, result) => {
-                        if (err) {
-                            res.send({'error': 'An error has occurred in Post /addgroup.'});
+
+                db.collection('AppGroups').find({}).toArray(function (err, groupsresult) {
+                    if (err) throw err;
+                    else {
+                        var output = groupsresult.filter(function (item) {
+                            return item.name === groupname;
+                        });
+
+                        if (JSON.stringify(output).includes(groupname)) {
+                            res.send("There is already a group with the name " + groupname);
+                            console.log("There is already a group with the name " + groupname);
                         } else {
-                            const check = {'id': req.body.adminid};
-
-                            db.collection('Clients').findOne(check, function (err, userresult) {
-                                if (err) throw err;
-                                var updateduser = userresult;
-                                if (updateduser.groups === null || updateduser.groups === "" || updateduser.groups === [])
-                                    updateduser.groups = [];
-                                updateduser.groups.push(groupname);
-
-                                db.collection('Clients').update(check, updateduser, (err, result1) => {
-                                    if (err) throw err;
-                                    console.log(result.ops[0]);
-                                    res.send("Group added");
-
-                                });
+                            console.log("Register in progress " + groupname);
+                            db.createCollection(groupname + "-Routine");
+                            db.createCollection(groupname + "-Temp");
+                            db.collection('AppGroups').insert(note, (err, result) => {
+                                if (err) {
+                                    res.send({'error': 'An error has occurred in Post /addgroup.'});
+                                } else {
 
 
+                                    if (updateduser.groups === null || updateduser.groups === "" || updateduser.groups === [])
+                                        updateduser.groups = [];
+                                    updateduser.groups.push(groupname);
+
+                                    db.collection('Clients').update(check, updateduser, (err, result1) => {
+                                        if (err) throw err;
+                                        console.log(result.ops[0]);
+                                        res.send("Group added");
+
+                                    });
+
+
+                                }
                             });
-                            //Send back to front.
-
                         }
-                    });
-                }
 
+                    }
+                });
             }
         });
 
@@ -552,38 +558,38 @@ module.exports = function (app, db) {
     });
 
 
-/*
-    app.get('/getallroutinedrivesbyadmin/:group', (req, res) => {
-        const group = req.params.group.toLowerCase();
+    /*
+        app.get('/getallroutinedrivesbyadmin/:group', (req, res) => {
+            const group = req.params.group.toLowerCase();
 
-        console.log("Get All Routine Drives By Admin in progress " + group);
-        db.collection(group + '-Routine').find({}).toArray(function (err, result) {
-            if (err) {
-                res.send({'error': 'An error has occurred in Get /getallroutinedrivesbyadmin.'});
-            } else {
-                //Send back to front.
-                console.log("All routine drives in group " + group + " requested by admin sent successfully to front!");
-                res.send(result);
-            }
+            console.log("Get All Routine Drives By Admin in progress " + group);
+            db.collection(group + '-Routine').find({}).toArray(function (err, result) {
+                if (err) {
+                    res.send({'error': 'An error has occurred in Get /getallroutinedrivesbyadmin.'});
+                } else {
+                    //Send back to front.
+                    console.log("All routine drives in group " + group + " requested by admin sent successfully to front!");
+                    res.send(result);
+                }
+            });
         });
-    });
-*/
-/*
-    app.get('/getalltempdrivesbyadmin/:group', (req, res) => {
-        const group = req.params.group.toLowerCase();
+    */
+    /*
+        app.get('/getalltempdrivesbyadmin/:group', (req, res) => {
+            const group = req.params.group.toLowerCase();
 
-        console.log("Get All Temp Drives By Admin in progress " + group);
-        db.collection(group + '-Temp').find({}).toArray(function (err, result) {
-            if (err) {
-                res.send({'error': 'An error has occurred in Get /getalltempdrivesbyadmin.'});
-            } else {
-                //Send back to front.
-                console.log("All temp drives in group " + group + " requested by admin sent successfully to front!");
-                res.send(result);
-            }
+            console.log("Get All Temp Drives By Admin in progress " + group);
+            db.collection(group + '-Temp').find({}).toArray(function (err, result) {
+                if (err) {
+                    res.send({'error': 'An error has occurred in Get /getalltempdrivesbyadmin.'});
+                } else {
+                    //Send back to front.
+                    console.log("All temp drives in group " + group + " requested by admin sent successfully to front!");
+                    res.send(result);
+                }
+            });
         });
-    });
-*/
+    */
 
 
     app.delete('/deleteroutinedrive/:group/:userid/:driveid', (req, res) => {
@@ -1063,7 +1069,7 @@ module.exports = function (app, db) {
                         });
                         var output = begincityresult.concat(endcityresult);
                         output.sort(customRoutine_sort);
-                        output = removeDuplicate(output,"_id");
+                        output = removeDuplicate(output, "_id");
                         res.send(output);
                         console.log(output);
                     });
@@ -1148,7 +1154,7 @@ module.exports = function (app, db) {
                         });
                         var output = begincityresult.concat(endcityresult);
                         output.sort(customTemp_sort);
-                        output = removeDuplicate(output,"_id");
+                        output = removeDuplicate(output, "_id");
                         res.send(output);
                         console.log(output);
                     });
@@ -1227,14 +1233,14 @@ module.exports = function (app, db) {
                                                             if (endcityresult2 != null)
                                                                 totalresults.push(endcityresult2);
 
-                                                            totalresults = removeDuplicate(totalresults,"_id");
+                                                            totalresults = removeDuplicate(totalresults, "_id");
                                                             totalresults.sort(customRoutine_sort);
                                                             console.log(totalresults);
                                                             res.send(totalresults);
                                                         });
                                                     });
                                                 } else {
-                                                    totalresults = removeDuplicate(totalresults,"_id");
+                                                    totalresults = removeDuplicate(totalresults, "_id");
                                                     totalresults.sort(customRoutine_sort);
                                                     console.log(totalresults);
                                                     res.send(totalresults);
@@ -1242,7 +1248,7 @@ module.exports = function (app, db) {
                                             });
                                         });
                                     } else {
-                                        totalresults = removeDuplicate(totalresults,"_id");
+                                        totalresults = removeDuplicate(totalresults, "_id");
                                         totalresults.sort(customRoutine_sort);
                                         console.log(totalresults);
                                         res.send(totalresults);
@@ -1330,14 +1336,14 @@ module.exports = function (app, db) {
                                                             if (endcityresult2 != null)
                                                                 totalresults.push(endcityresult2);
 
-                                                            totalresults = removeDuplicate(totalresults,"_id");
+                                                            totalresults = removeDuplicate(totalresults, "_id");
                                                             totalresults.sort(customTemp_sort);
                                                             console.log(totalresults);
                                                             res.send(totalresults);
                                                         });
                                                     });
                                                 } else {
-                                                    totalresults = removeDuplicate(totalresults,"_id");
+                                                    totalresults = removeDuplicate(totalresults, "_id");
                                                     totalresults.sort(customTemp_sort);
                                                     console.log(totalresults);
                                                     res.send(totalresults);
@@ -1345,7 +1351,7 @@ module.exports = function (app, db) {
                                             });
                                         });
                                     } else {
-                                        totalresults = removeDuplicate(totalresults,"_id");
+                                        totalresults = removeDuplicate(totalresults, "_id");
                                         totalresults.sort(customTemp_sort);
                                         console.log(totalresults);
                                         res.send(totalresults);
