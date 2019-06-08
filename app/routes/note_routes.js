@@ -1375,4 +1375,89 @@ module.exports = function (app, db) {
     });
 
 
+    app.put('/leavegroup/:group/:userid', (req, res) => {
+        const group = req.params.group.toLowerCase();
+        const checkuserid = {'id': req.params.userid};
+        const checkgroup = {'name': group};
+        db.collection('Clients').findOne(checkuserid, function (err, userresult) {
+            if (err) throw err;
+            if (userresult == null) {
+                res.send("There is no user with this userid " + req.params.userid);
+                console.log("There is no user with this userid " + req.params.userid);
+            } else {
+                db.collection('AppGroups').findOne(checkgroup, function (err, groupresult) {
+                    if (err) throw err;
+                    if (groupresult == null) {
+                        res.send("There is no group with this name " + group);
+                        console.log("There is no group with this name " + group);
+                    } else {
+
+                        var updateduserresult = userresult;
+                        if (updateduserresult.groups === null || updateduserresult.groups === "" || updateduserresult.groups === undefined || updateduserresult.groups === [])
+                            updateduserresult.groups = [];
+
+                        var output1 = updateduserresult.groups.filter(function (item) {
+                            return item === group;
+                        });
+
+                        if (JSON.stringify(output1).includes(group)) { //if userid is part of the group
+                            var output2 = updateduserresult.groups.filter(function (item) {
+                                return item !== group;
+                            });
+                            updateduserresult.groups = output2;
+                            db.collection('Clients').update(checkuserid, updateduserresult, (err, updadteduserresult) => {
+                                if (err) throw err;
+                                //Send back to front.
+                                console.log(updateduserresult);
+
+                                var output3 = groupresult.adminid.filter(function (item) {
+                                    return item === req.params.userid;
+                                });
+
+                                if (JSON.stringify(output3).includes(req.params.userid)) { // if userid is admin of the group
+                                    var updatedgroupsadmin = groupresult;
+                                    var output4 = updatedgroupsadmin.adminid.filter(function (item) {
+                                        return item !== req.params.userid;
+                                    });
+
+                                    updatedgroupsadmin.adminid = output4;
+
+
+                                    if (Object.keys(updatedgroupsadmin.adminid).length == 0) { //if no adminds left
+                                        db.collection(group + "-Routine").drop();
+                                        db.collection(group + "-Temp").drop();
+                                        db.collection('AppGroups').remove(checkgroup, (err, removedgroup) => {
+                                            if (err) throw err;
+                                            console.log("The group " + group + " has been deleted because all admins left");
+                                            res.send("The group " + group + " has been deleted because all admins left");
+                                        });
+
+                                    } else {
+                                        db.collection('AppGroups').update(checkgroup, updatedgroupsadmin, (err, result1) => {
+                                            if (err) throw err;
+                                            console.log(updatedgroupsadmin);
+                                            res.send(JSON.stringify(updateduserresult) + "\n" + JSON.stringify(updatedgroupsadmin));
+
+                                        });
+                                    }
+
+                                } else
+                                    res.send(updateduserresult);
+
+
+                            });
+
+                        } else {
+                            res.send("This userid " + req.params.userid + " is not part of this group " + group);
+                            console.log("This userid " + req.params.userid + " is not part of this group " + group);
+
+                        }
+
+                    }
+                });
+            }
+        });
+    });
+
+
 };
