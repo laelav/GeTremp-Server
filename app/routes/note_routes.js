@@ -46,18 +46,18 @@ module.exports = function (app, db) {
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            if (userresult === null) {
+            if (userresult === null) { // if there is no userid with the same id.
                 console.log("Register in progress " + req.body.id);
                 db.collection('Clients').insert(note, (err, result) => {
                     if (err) {
                         res.send({'error': 'An error has occurred in Post /register.'});
                     } else {
                         //Send back to front.
-                        res.send("User added successfully");
+                        res.send({'message': "User added successfully"});
                     }
                 });
             } else {
-                res.send("There is already a user with this userid " + req.body.id);
+                res.send({'message': "There is already a user with this userid " + req.body.id});
                 console.log("There is already a user with this userid " + req.body.id);
 
             }
@@ -76,9 +76,9 @@ module.exports = function (app, db) {
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
             var updateduser = userresult;
-            if (updateduser === null) {
+            if (updateduser === null) { //if there is no userid with this id.
                 console.log("There is no user with this id.");
-                res.send("There is no user with this id.");
+                res.send({'error': "There is no user with this id."});
             } else {
 
 
@@ -89,8 +89,8 @@ module.exports = function (app, db) {
                             return item.name === groupname;
                         });
 
-                        if (JSON.stringify(output).includes(groupname)) {
-                            res.send("There is already a group with the name " + groupname);
+                        if (JSON.stringify(output).includes(groupname)) { //if there is a group with this name already.
+                            res.send({'error': "There is already a group with the name " + groupname});
                             console.log("There is already a group with the name " + groupname);
                         } else {
                             console.log("Register in progress " + groupname);
@@ -109,7 +109,7 @@ module.exports = function (app, db) {
                                     db.collection('Clients').update(check, updateduser, (err, result1) => {
                                         if (err) throw err;
                                         console.log(result.ops[0]);
-                                        res.send("Group added");
+                                        res.send({'message': "Group added"});
 
                                     });
 
@@ -131,21 +131,21 @@ module.exports = function (app, db) {
         const checkgroup = {'name': group};
         db.collection('Clients').findOne(checkuserid, function (err, userresult) {
             if (err) throw err;
-            if (userresult == null) {
-                res.send("There is no user with this userid " + req.params.userid);
+            if (userresult == null) { //if there is no userid with this id.
+                res.send({'error': "There is no user with this userid " + req.params.userid});
                 console.log("There is no user with this userid " + req.params.userid);
             } else {
                 db.collection('AppGroups').findOne(checkgroup, function (err, groupresult) {
                     if (err) throw err;
-                    if (groupresult == null) {
-                        res.send("There is no group with this name " + group);
+                    if (groupresult == null) { //if the group doesn't exist.
+                        res.send({'error': "There is no group with this name " + group});
                         console.log("There is no group with this name " + group);
                     } else {
                         var output = groupresult.adminid.filter(function (item) {
                             return item === req.params.adminid;
                         });
 
-                        if (JSON.stringify(output).includes(req.params.adminid)) {
+                        if (JSON.stringify(output).includes(req.params.adminid)) { //if the admindid is really an admin.
                             var updateduserresult = userresult;
                             if (updateduserresult.groups === null || updateduserresult.groups === "" || updateduserresult.groups === undefined || updateduserresult.groups === [])
                                 updateduserresult.groups = [];
@@ -154,8 +154,8 @@ module.exports = function (app, db) {
                                 return item === group;
                             });
 
-                            if (JSON.stringify(output1).includes(group)) {
-                                res.send("This userid" + req.params.userid + " is already part of this group " + group);
+                            if (JSON.stringify(output1).includes(group)) { //if the userid is already a part of the group.
+                                res.send({'error': "This userid" + req.params.userid + " is already part of this group " + group});
                                 console.log("This userid" + req.params.userid + " is already part of this group " + group);
                             } else {
 
@@ -163,13 +163,13 @@ module.exports = function (app, db) {
                                 db.collection('Clients').update(checkuserid, updateduserresult, (err, updadteduserresult) => {
                                     if (err) throw err;
                                     //Send back to front.
-                                    res.send(updateduserresult);
+                                    res.send({'message': updateduserresult});
                                     console.log(updateduserresult);
 
                                 });
                             }
                         } else {
-                            res.send("This adminid " + req.params.adminid + " is not an admin of this group " + group);
+                            res.send({'error': "This adminid " + req.params.adminid + " is not an admin of this group " + group});
                             console.log("This adminid " + req.params.adminid + " is not an admin of this group " + group);
 
                         }
@@ -185,21 +185,21 @@ module.exports = function (app, db) {
         const checkgroup = {'name': group};
         db.collection('Clients').findOne(checkuserid, function (err, userresult) {
             if (err) throw err;
-            if (userresult == null) {
-                res.send("There is no user with this userid " + req.params.userid);
+            if (userresult == null) { //if there is no userid with this id.
+                res.send({'error': "There is no user with this userid " + req.params.userid});
                 console.log("There is no user with this userid " + req.params.userid);
             } else {
                 db.collection('AppGroups').findOne(checkgroup, function (err, groupresult) {
                     if (err) throw err;
-                    if (groupresult == null) {
-                        res.send("There is no group with this name " + group);
+                    if (groupresult == null) { //if group doesn't exist.
+                        res.send({'error': "There is no group with this name " + group});
                         console.log("There is no group with this name " + group);
                     } else {
                         var output = groupresult.adminid.filter(function (item) {
                             return item === req.params.adminid;
                         });
 
-                        if (JSON.stringify(output).includes(req.params.adminid)) {
+                        if (JSON.stringify(output).includes(req.params.adminid)) { //if adminid is really an admin.
                             var updateduserresult = userresult;
                             if (updateduserresult.groups === null || updateduserresult.groups === "" || updateduserresult.groups === undefined || updateduserresult.groups === [])
                                 updateduserresult.groups = [];
@@ -208,25 +208,25 @@ module.exports = function (app, db) {
                                 return item === group;
                             });
 
-                            if (JSON.stringify(output1).includes(group)) {
+                            if (JSON.stringify(output1).includes(group)) { //if userid is part of the group.
                                 var updatedgroupresult = groupresult;
                                 var output2 = updatedgroupresult.adminid.filter(function (item) {
                                     return item === req.params.userid;
                                 });
 
-                                if (JSON.stringify(output2).includes(req.params.userid)) {
+                                if (JSON.stringify(output2).includes(req.params.userid)) { //if userid is already an admin in the group.
                                     console.log("This userid " + req.params.userid + " is already an admin of this group " + group);
-                                    res.send("This userid " + req.params.userid + " is already an admin of this group " + group);
+                                    res.send({'error': "This userid " + req.params.userid + " is already an admin of this group " + group});
                                 } else {
-                                    if (updatedgroupresult.adminid.length > 4) {
+                                    if (updatedgroupresult.adminid.length > 4) { //if there are 5 admins in the group already.
                                         console.log("The number of admins in group " + group + " is already 5")
-                                        res.send("The number of admins in group " + group + " is already 5");
+                                        res.send({'error': "The number of admins in group " + group + " is already 5"});
                                     } else {
                                         updatedgroupresult.adminid.push(req.params.userid);
                                         db.collection('AppGroups').update(checkgroup, updatedgroupresult, (err, result1) => {
                                             if (err) throw err;
                                             console.log(updatedgroupresult);
-                                            res.send(updatedgroupresult);
+                                            res.send({'message': updatedgroupresult});
 
                                         });
                                     }
@@ -255,20 +255,20 @@ module.exports = function (app, db) {
         db.collection('Clients').findOne(checkuserid, function (err, userresult) {
             if (err) throw err;
             if (userresult == null) {
-                res.send("There is no user with this userid " + req.params.userid);
+                res.send({'error': "There is no user with this userid " + req.params.userid});
                 console.log("There is no user with this userid " + req.params.userid);
             } else {
                 db.collection('AppGroups').findOne(checkgroup, function (err, groupresult) {
                     if (err) throw err;
                     if (groupresult == null) {
-                        res.send("There is no group with this name " + group);
+                        res.send({'error': "There is no group with this name " + group});
                         console.log("There is no group with this name " + group);
                     } else {
                         var output = groupresult.adminid.filter(function (item) {
                             return item === req.params.adminid;
                         });
 
-                        if (JSON.stringify(output).includes(req.params.adminid)) {
+                        if (JSON.stringify(output).includes(req.params.adminid)) { //if adminid is an admin in the group.
                             var updateduserresult = userresult;
                             if (updateduserresult.groups === null || updateduserresult.groups === "" || updateduserresult.groups === undefined || updateduserresult.groups === [])
                                 updateduserresult.groups = [];
@@ -277,7 +277,7 @@ module.exports = function (app, db) {
                                 return item === group;
                             });
 
-                            if (JSON.stringify(output1).includes(group)) {
+                            if (JSON.stringify(output1).includes(group)) { //if userid is part of the group.
                                 var output2 = updateduserresult.groups.filter(function (item) {
                                     return item !== group;
                                 });
@@ -291,7 +291,7 @@ module.exports = function (app, db) {
                                         return item === req.params.userid;
                                     });
 
-                                    if (JSON.stringify(output3).includes(req.params.userid)) {
+                                    if (JSON.stringify(output3).includes(req.params.userid)) { //if userid is also an admin in the group.
                                         var updatedgroupsadmin = groupresult;
                                         var output4 = updatedgroupsadmin.adminid.filter(function (item) {
                                             return item !== req.params.userid;
@@ -300,12 +300,12 @@ module.exports = function (app, db) {
                                         db.collection('AppGroups').update(checkgroup, updatedgroupsadmin, (err, result1) => {
                                             if (err) throw err;
                                             console.log(updatedgroupsadmin);
-                                            res.send(JSON.stringify(updateduserresult) + "\n" + JSON.stringify(updatedgroupsadmin));
+                                            res.send({'message': JSON.stringify(updateduserresult) + "\n" + JSON.stringify(updatedgroupsadmin)});
 
                                         });
 
                                     } else
-                                        res.send(updateduserresult);
+                                        res.send({'message': updateduserresult});
 
 
                                 });
@@ -372,19 +372,19 @@ module.exports = function (app, db) {
                     }
                     //console.log(hasGroupFlag + " " + GroupExistFlag);
 
-                    if (hasGroupFlag == 1 && GroupExistFlag == 1) {
+                    if (hasGroupFlag == 1 && GroupExistFlag == 1) { //if userid is part of the group, and the group exists.
                         db.collection(req.body.group.toLowerCase() + "-Routine").insert(note, (err, result) => {
                             if (err) {
                                 res.send({'error': 'An error has occurred in Post /addroutinedrive.'});
                             } else {
                                 //Send back to front.
                                 console.log("The drive has been added successfully!");
-                                res.send("The drive has been added successfully!");
+                                res.send({'message': "The drive has been added successfully!"});
                             }
                         });
                     } else {
                         console.log("The user id:" + req.body.userid + " name: " + req.body.name + " is not a part of the group '" + req.body.group + "'! or the group doesn't exists");
-                        res.send("The user id:" + req.body.userid + " name: " + req.body.name + " is not a part of the group '" + req.body.group + "'! or the group doesn't exists");
+                        res.send({'error': "The user id:" + req.body.userid + " name: " + req.body.name + " is not a part of the group '" + req.body.group + "'! or the group doesn't exists"});
                     }
 
                 }
@@ -433,19 +433,19 @@ module.exports = function (app, db) {
                         }
 
                     }
-                    if (hasGroupFlag == 1 && GroupExistFlag == 1) {
+                    if (hasGroupFlag == 1 && GroupExistFlag == 1) { //if userid has the group, and the group exists.
                         db.collection(req.body.group.toLowerCase() + "-Temp").insert(note, (err, result) => {
                             if (err) {
                                 res.send({'error': 'An error has occurred in Post /addtempdrive.'});
                             } else {
                                 //Send back to front.
                                 console.log("The drive has been added successfully!");
-                                res.send("The drive has been added successfully!");
+                                res.send({'message': "The drive has been added successfully!"});
                             }
                         });
                     } else {
                         console.log("The user id:" + req.body.userid + " name: " + req.body.name + " is not a part of the group '" + req.body.group + "'! or the group doesn't exists");
-                        res.send("The user id:" + req.body.userid + " name: " + req.body.name + " is not a part of the group '" + req.body.group + "'! or the group doesn't exists");
+                        res.send({'error': "The user id:" + req.body.userid + " name: " + req.body.name + " is not a part of the group '" + req.body.group + "'! or the group doesn't exists"});
                     }
 
                 }
@@ -500,7 +500,7 @@ module.exports = function (app, db) {
                     flag = 1;
             }
 
-            if (flag == 1) {
+            if (flag == 1) { //if userid is part of the group.
                 db.collection(group + '-Routine').find({}).toArray(function (err, result) {
                     if (err) {
                         res.send({'error': 'An error has occurred in Get /getallroutinedrives.'});
@@ -514,7 +514,7 @@ module.exports = function (app, db) {
 
             } else {
                 console.log("The user id:" + id + " is not a part of the group '" + group + "'!");
-                res.send("The user id:" + id + " is not a part of the group '" + group + "'!");
+                res.send({'error': "The user id:" + id + " is not a part of the group '" + group + "'!"});
             }
         });
 
@@ -538,7 +538,7 @@ module.exports = function (app, db) {
                     flag = 1;
             }
 
-            if (flag == 1) {
+            if (flag == 1) { //if userid is part of the group.
                 db.collection(group + '-Temp').find({}).toArray(function (err, result) {
                     if (err) {
                         res.send({'error': 'An error has occurred in Get /getalltempdrives.'});
@@ -552,7 +552,7 @@ module.exports = function (app, db) {
 
             } else {
                 console.log("The user id:" + id + " is not a part of the group '" + group + "'!");
-                res.send("The user id:" + id + " is not a part of the group '" + group + "'!");
+                res.send({'error': "The user id:" + id + " is not a part of the group '" + group + "'!"});
             }
         });
     });
@@ -608,20 +608,20 @@ module.exports = function (app, db) {
                 //Send back to front.
                 var ifDriveExistFlag = 0;
                 for (var i = 0; i < result.length; i++) {
-                    if (driveid == result[i]._id) {
+                    if (driveid == result[i]._id) { //if drive exists.
                         ifDriveExistFlag = 1;
-                        if (userid == result[i].userid) {
+                        if (userid == result[i].userid) { //if userid the owner of the drive.
                             db.collection(group + '-Routine').remove(details, (err, item) => {
                                 if (err) {
                                     res.send({'error': 'An error has occurred in deleteroutinedrive'});
                                 } else {
                                     //Send back to front.
                                     console.log('Drive ' + driveid + ' deleted!');
-                                    res.send('Drive ' + driveid + ' deleted!');
+                                    res.send({'message': 'Drive ' + driveid + ' deleted!'});
                                 }
                             });
                         } else {
-                            res.send("The drive " + driveid + " hasn't been opened by the user " + userid);
+                            res.send({'error': "The drive " + driveid + " hasn't been opened by the user " + userid});
                         }
                     }
                 }
@@ -645,20 +645,20 @@ module.exports = function (app, db) {
                 //Send back to front.
                 var ifDriveExistFlag = 0;
                 for (var i = 0; i < result.length; i++) {
-                    if (driveid == result[i]._id) {
+                    if (driveid == result[i]._id) { //if drive exists.
                         ifDriveExistFlag = 1;
-                        if (userid == result[i].userid) {
+                        if (userid == result[i].userid) { //if userid is the owner of the drive.
                             db.collection(group + '-Temp').remove(details, (err, item) => {
                                 if (err) {
                                     res.send({'error': 'An error has occurred in deletetempdrive'});
                                 } else {
                                     //Send back to front.
                                     console.log('Drive ' + driveid + ' deleted!');
-                                    res.send('Drive ' + driveid + ' deleted!');
+                                    res.send({'message': 'Drive ' + driveid + ' deleted!'});
                                 }
                             });
                         } else {
-                            res.send("The drive " + driveid + " hasn't been opened by the user " + userid);
+                            res.send({'error': "The drive " + driveid + " hasn't been opened by the user " + userid});
                         }
                     }
                 }
@@ -682,7 +682,7 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            if (output.includes(group)) {
+            if (output.includes(group)) { //if userid is part of the group.
                 const driverdetails = {
                     'id': userid,
                     'firstname': userresult.firstName,
@@ -707,9 +707,9 @@ module.exports = function (app, db) {
                     });
 
 
-                    if (!JSON.stringify(membersoutput).includes(userid)) {
-                        if (driveresult.openslots < 1) {
-                            res.send("There are no open slots in drive id: " + driveid);
+                    if (!JSON.stringify(membersoutput).includes(userid)) { //if userid is not in the drive already.
+                        if (driveresult.openslots < 1) { //if there are no open slots.
+                            res.send({'error': "There are no open slots in drive id: " + driveid});
                             console.log("The open slots is: " + driveresult.openslots);
                             console.log("There are no open slots in drive id: " + driveid);
                         } else {
@@ -734,14 +734,14 @@ module.exports = function (app, db) {
 
                         }
                     } else {
-                        res.send("The user id " + userid + " is already in the drive " + driveid);
+                        res.send({'error': "The user id " + userid + " is already in the drive " + driveid});
                         console.log("The user id " + userid + " is already in the drive " + driveid);
                     }
 
 
                 });
             } else {
-                res.send("The user id " + userid + " isn't part of the group " + group);
+                res.send({'error': "The user id " + userid + " isn't part of the group " + group});
                 console.log("The user id " + userid + " isn't part of the group " + group);
             }
 
@@ -767,7 +767,7 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            if (output.includes(group)) {
+            if (output.includes(group)) { //if userid is part of the group.
                 const driverdetails = {
                     'id': userid,
                     'firstname': userresult.firstName,
@@ -791,9 +791,9 @@ module.exports = function (app, db) {
                     });
 
 
-                    if (!JSON.stringify(membersoutput).includes(userid)) {
-                        if (driveresult.openslots < 1) {
-                            res.send("There are no open slots in drive id: " + driveid);
+                    if (!JSON.stringify(membersoutput).includes(userid)) { //if userid is not in the drive already.
+                        if (driveresult.openslots < 1) { //if there are no open slots.
+                            res.send({'error': "There are no open slots in drive id: " + driveid});
                             console.log("The open slots is: " + driveresult.openslots);
                             console.log("There are no open slots in drive id: " + driveid);
                         } else {
@@ -818,7 +818,7 @@ module.exports = function (app, db) {
 
                         }
                     } else {
-                        res.send("The user id " + userid + " is already in the drive " + driveid);
+                        res.send({'error': "The user id " + userid + " is already in the drive " + driveid});
                         console.log("The user id " + userid + " is already in the drive " + driveid);
                     }
 
@@ -851,7 +851,7 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            if (output.includes(group)) {
+            if (output.includes(group)) { //if userid is part of the group.
                 const driverdetails = {
                     'id': userid,
                     'firstname': userresult.firstName,
@@ -873,8 +873,8 @@ module.exports = function (app, db) {
                         return item.id == userid;
                     });
 
-                    if (!JSON.stringify(membersoutput).includes(userid)) {
-                        res.send("The user " + userid + " is not in drive id: " + driveid);
+                    if (!JSON.stringify(membersoutput).includes(userid)) { //if userid is not in the drive.
+                        res.send({'error': "The user " + userid + " is not in drive id: " + driveid});
                         console.log("The user " + userid + " is not in drive id: " + driveid);
                     } else {
                         var updateddrive = driveresult;
@@ -905,7 +905,7 @@ module.exports = function (app, db) {
 
                 });
             } else {
-                res.send("The user id " + userid + " isn't part of the group " + group);
+                res.send({'error': "The user id " + userid + " isn't part of the group " + group});
                 console.log("The user id " + userid + " isn't part of the group " + group);
             }
 
@@ -930,7 +930,7 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            if (output.includes(group)) {
+            if (output.includes(group)) { // if userid is part of the group.
                 const driverdetails = {
                     'id': userid,
                     'firstname': userresult.firstName,
@@ -954,8 +954,8 @@ module.exports = function (app, db) {
                     });
 
 
-                    if (!JSON.stringify(membersoutput).includes(userid)) {
-                        res.send("The user " + userid + " is not in drive id: " + driveid);
+                    if (!JSON.stringify(membersoutput).includes(userid)) { //if userid is not in the drive.
+                        res.send({'error': "The user " + userid + " is not in drive id: " + driveid});
                         console.log("The user " + userid + " is not in drive id: " + driveid);
                     } else {
                         var updateddrive = driveresult;
@@ -986,7 +986,7 @@ module.exports = function (app, db) {
 
                 });
             } else {
-                res.send("The user id " + userid + " isn't part of the group " + group);
+                res.send({'error': "The user id " + userid + " isn't part of the group " + group});
                 console.log("The user id " + userid + " isn't part of the group " + group);
             }
 
@@ -1016,7 +1016,7 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            if (output.includes(group)) {
+            if (output.includes(group)) { //if userid is in the group.
                 const checkbeginciry = {'begincity': textforsearch};
                 const checkendciry = {'endcity': textforsearch};
                 db.collection(group + '-Routine').find(checkbeginciry).toArray(function (err, begincityresult) {
@@ -1026,7 +1026,7 @@ module.exports = function (app, db) {
                         if (err) throw err;
                         db.collection('Clients-History').findOne(check, function (err, userhistoryresult) {
                             if (err) throw err;
-                            if (userhistoryresult == null) {
+                            if (userhistoryresult == null) { //if there is no history search for the user.
                                 const newuserhistory = {
                                     'id': userid,
                                     'searches': [{
@@ -1043,7 +1043,7 @@ module.exports = function (app, db) {
                                     return item.name == textforsearch;
                                 });
 
-                                if (JSON.stringify(output1).includes(textforsearch)) {
+                                if (JSON.stringify(output1).includes(textforsearch)) { //if this search already exists.
                                     for (var i in updateduserhistory.searches) {
                                         var item = updateduserhistory.searches[i];
 
@@ -1054,7 +1054,7 @@ module.exports = function (app, db) {
                                     db.collection('Clients-History').update(check, updateduserhistory, (err, result) => {
                                         if (err) throw err;
                                     });
-                                } else {
+                                } else { //if this search is new.
                                     const newsearch = {
                                         'name': textforsearch,
                                         'count': "1"
@@ -1075,7 +1075,7 @@ module.exports = function (app, db) {
                     });
                 });
             } else {
-                res.send("The user id " + userid + " isn't part of the group " + group);
+                res.send({'error': "The user id " + userid + " isn't part of the group " + group});
                 console.log("The user id " + userid + " isn't part of the group " + group);
             }
         });
@@ -1101,7 +1101,7 @@ module.exports = function (app, db) {
             var output = tempgroups.filter(function (item) {
                 return item == group;
             });
-            if (output.includes(group)) {
+            if (output.includes(group)) { //if userid is part of the group.
                 const checkbeginciry = {'begincity': textforsearch};
                 const checkendciry = {'endcity': textforsearch};
                 db.collection(group + '-Temp').find(checkbeginciry).toArray(function (err, begincityresult) {
@@ -1111,7 +1111,7 @@ module.exports = function (app, db) {
                         if (err) throw err;
                         db.collection('Clients-History').findOne(check, function (err, userhistoryresult) {
                             if (err) throw err;
-                            if (userhistoryresult == null) {
+                            if (userhistoryresult == null) { //if there is no search history for the user.
                                 const newuserhistory = {
                                     'id': userid,
                                     'searches': [{
@@ -1128,7 +1128,7 @@ module.exports = function (app, db) {
                                     return item.name == textforsearch;
                                 });
 
-                                if (JSON.stringify(output1).includes(textforsearch)) {
+                                if (JSON.stringify(output1).includes(textforsearch)) { //if there is already a search like this.
                                     for (var i in updateduserhistory.searches) {
                                         var item = updateduserhistory.searches[i];
 
@@ -1139,7 +1139,7 @@ module.exports = function (app, db) {
                                     db.collection('Clients-History').update(check, updateduserhistory, (err, result) => {
                                         if (err) throw err;
                                     });
-                                } else {
+                                } else { //if this is a new search.
                                     const newsearch = {
                                         'name': textforsearch,
                                         'count': "1"
@@ -1160,7 +1160,7 @@ module.exports = function (app, db) {
                     });
                 });
             } else {
-                res.send("The user id " + userid + " isn't part of the group " + group);
+                res.send({'error': "The user id " + userid + " isn't part of the group " + group});
                 console.log("The user id " + userid + " isn't part of the group " + group);
             }
         });
@@ -1176,7 +1176,7 @@ module.exports = function (app, db) {
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            if (userresult != null) {
+            if (userresult != null) { //if there is a user with this userid.
                 var tempgroups = userresult.groups;
                 if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
                     tempgroups = [];
@@ -1184,10 +1184,10 @@ module.exports = function (app, db) {
                 var output = tempgroups.filter(function (item) {
                     return item == group;
                 });
-                if (output.includes(group)) {
+                if (output.includes(group)) { //if userid is part of the group.
                     db.collection('Clients-History').findOne(check, function (err, userhistoryresult) {
                         if (err) throw err;
-                        if (userhistoryresult != null) {
+                        if (userhistoryresult != null) { //if userid has search history.
                             userhistoryresult.searches.sort(custom_sort);
                             var totalresults = [];
                             var length = userhistoryresult.searches.length;
@@ -1256,17 +1256,17 @@ module.exports = function (app, db) {
                                 });
                             });
                         } else {
-                            res.send("The user id " + userid + " has no search history");
                             console.log("The user id " + userid + " has no search history");
+                            res.send({'error': "The user id " + userid + " has no search history"});
                         }
                     });
                 } else {
-                    res.send("The user id " + userid + " isn't part of the group " + group);
                     console.log("The user id " + userid + " isn't part of the group " + group);
+                    res.send({'error': "The user id " + userid + " isn't part of the group " + group});
                 }
             } else {
                 console.log("This user doesn't exist");
-                res.send("This user doesn't exist");
+                res.send({'error': "This user doesn't exist"});
             }
         });
     });
@@ -1279,7 +1279,7 @@ module.exports = function (app, db) {
 
         db.collection('Clients').findOne(check, function (err, userresult) {
             if (err) throw err;
-            if (userresult != null) {
+            if (userresult != null) { //if userid exists.
                 var tempgroups = userresult.groups;
                 if (tempgroups == "" || tempgroups === null || tempgroups === undefined)
                     tempgroups = [];
@@ -1287,10 +1287,10 @@ module.exports = function (app, db) {
                 var output = tempgroups.filter(function (item) {
                     return item == group;
                 });
-                if (output.includes(group)) {
+                if (output.includes(group)) { //if userid is part of the group.
                     db.collection('Clients-History').findOne(check, function (err, userhistoryresult) {
                         if (err) throw err;
-                        if (userhistoryresult != null) {
+                        if (userhistoryresult != null) { //if userid has search history.
                             userhistoryresult.searches.sort(custom_sort);
                             var totalresults = [];
                             var length = userhistoryresult.searches.length;
@@ -1359,17 +1359,17 @@ module.exports = function (app, db) {
                                 });
                             });
                         } else {
-                            res.send("The user id " + userid + " has no search history");
                             console.log("The user id " + userid + " has no search history");
+                            res.send({'error': "The user id " + userid + " has no search history"});
                         }
                     });
                 } else {
-                    res.send("The user id " + userid + " isn't part of the group " + group);
                     console.log("The user id " + userid + " isn't part of the group " + group);
+                    res.send({'error': "The user id " + userid + " isn't part of the group " + group});
                 }
             } else {
                 console.log("This user doesn't exist");
-                res.send("This user doesn't exist");
+                res.send({'error': "This user doesn't exist"});
             }
         });
     });
@@ -1381,14 +1381,14 @@ module.exports = function (app, db) {
         const checkgroup = {'name': group};
         db.collection('Clients').findOne(checkuserid, function (err, userresult) {
             if (err) throw err;
-            if (userresult == null) {
-                res.send("There is no user with this userid " + req.params.userid);
+            if (userresult == null) { //if there is no userid with this id.
+                res.send({'error': "There is no user with this userid " + req.params.userid});
                 console.log("There is no user with this userid " + req.params.userid);
             } else {
                 db.collection('AppGroups').findOne(checkgroup, function (err, groupresult) {
                     if (err) throw err;
-                    if (groupresult == null) {
-                        res.send("There is no group with this name " + group);
+                    if (groupresult == null) { //if group doesn't exists.
+                        res.send({'error': "There is no group with this name " + group});
                         console.log("There is no group with this name " + group);
                     } else {
 
@@ -1429,7 +1429,7 @@ module.exports = function (app, db) {
                                         db.collection('AppGroups').remove(checkgroup, (err, removedgroup) => {
                                             if (err) throw err;
                                             console.log("The group " + group + " has been deleted because all admins left");
-                                            res.send("The group " + group + " has been deleted because all admins left");
+                                            res.send({'message': "The group " + group + " has been deleted because all admins left"});
                                         });
 
                                     } else {
@@ -1448,7 +1448,7 @@ module.exports = function (app, db) {
                             });
 
                         } else {
-                            res.send("This userid " + req.params.userid + " is not part of this group " + group);
+                            res.send({'error': "This userid " + req.params.userid + " is not part of this group " + group});
                             console.log("This userid " + req.params.userid + " is not part of this group " + group);
 
                         }
