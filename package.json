@@ -15,7 +15,7 @@
     "express": "^4.16.4",
     "iconv": "^2.3.4",
     "kruptein": "0.0.8",
-    "mongodb": "^3.1.10",
+    "mongodb": "^3.1.13",
     "node.js": "0.0.0",
     "socket.io": "^2.2.0",
     "utf8": "^3.0.0"
