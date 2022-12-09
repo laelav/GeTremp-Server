@@ -12,7 +12,7 @@
   "dependencies": {
     "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "iconv": "^2.3.4",
     "kruptein": "0.0.8",
     "mongodb": "^3.1.10",
